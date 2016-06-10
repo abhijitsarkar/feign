@@ -63,6 +63,8 @@ spring:
 
 ```
    * Full regex supported: Mapping of requests to responses is only limited by your regex skill.
+   * Ability to match request body and return response based on hard-coded text, file system resource,
+   classpath resource, and using JSON path or XPath. (This is work in progress).
    * You are in charge: Want more control over the request/response mapping? No problemo.
    Create your own mapper classes and configure in the `application.yml` file.
    * Optional recording of requests: The request can be saved in an in-memory MongoDB
