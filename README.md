@@ -1,7 +1,7 @@
 # Feign Stub Server
 
 Feign can be used to stub out any system you integrate with via HTTP(S). It is born out of the frustration
-that none of the other available servers provide clean separation between the core features and execution.
+that none of the other mock servers provide clean separation between the core features and execution.
 In order to use those servers, you will have to get in bed with whatever they are using (Jetty/whatever)
 or write a whole bunch of code.
 
