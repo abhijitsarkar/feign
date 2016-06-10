@@ -1,0 +1,45 @@
+spring:
+    profiles: p1
+feign:
+  mappings:
+    -
+      request:
+        record: false
+#        idGenerator: name.abhijitsarkar.javaee.feign.model.DefaultIdGenerator
+        path:
+          uri: /feign/abc
+        method:
+          name: GET
+#        queries:
+#          matcher: name.abhijitsarkar.javaee.feign.matcher.QueriesMatcher
+#          ignoreUnknown: true
+#          ignoreEmpty: true
+#          pairs:
+#            q1: [a, b]
+#            q2: [c]
+        headers:
+#          matcher: name.abhijitsarkar.javaee.feign.matcher.HeadersMatcher
+          ignoreUnknown: true
+#          ignoreEmpty: true
+#          pairs:
+#            h1: h1
+#            h2: h2
+#        body:
+#          matcher: name.abhijitsarkar.javaee.feign.matcher.BodyMatcher
+#          raw: body
+#      response:
+#        status: 200
+#        headers:
+#          h3: h3
+#          h4: h4
+    -
+      request:
+        path:
+          uri: /feign/xyz
+        headers:
+          ignoreUnknown: true
+
+---
+
+spring:
+       profiles: p2
