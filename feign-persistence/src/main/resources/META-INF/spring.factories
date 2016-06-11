@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+name.abhijitsarkar.feign.persistence.FeignPersistenceAutoConfiguration

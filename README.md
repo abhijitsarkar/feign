@@ -2,17 +2,15 @@
 
 Feign can be used to stub out any system you integrate with via HTTP(S). It is born out of the frustration
 that none of the other mock servers provide clean separation between the core features and execution.
-In order to use those servers, you will have to get in bed with whatever they are using (Jetty/whatever)
-or write a whole bunch of code.
 
 ## Technologies Uses
    * Spring Boot
    * Spring Data
    * Spring HATEOAS
-   * Embedded MongoDB
+   * Embedded MongoDB (optional)
 
-## Core Features (developed in 2 days, rather nights)
-   * Declarative request/response mapping via YAML: Example below.
+## Core Features
+   * Declarative request/response mapping via YAML: Example below but not all properties shown.
 ```
 spring:
     profiles: p1
@@ -63,14 +61,16 @@ spring:
 
 ```
    * Full regex supported: Mapping of requests to responses is only limited by your regex skill.
-   * Ability to match request body and return response based on hard-coded text, file system resource,
-   classpath resource, and using JSON path or XPath. (This is work in progress).
-   * You are in charge: Want more control over the request/response mapping? No problemo.
-   Create your own mapper classes and configure in the `application.yml` file.
-   * Optional recording of requests: The request can be saved in an in-memory MongoDB
-   and served on a platter via Spring HATEOAS. Example below.
+   * Ability to match request body and return response based on hard-coded text, url resource,
+   classpath resource.
+   * You are in charge: Want more control over the request/response mapping? No problem.
+   Create your own mapper classes and configure in the `application.yml`.
+   * Optional recording of requests: The request can be saved in a backend data store
+   and served on a platter using Spring HATEOAS. By default, an embedded MongoDB module is provided
+   but you can swap it out with any persistence of your choice.
+   * Extensive test coverage.
 
-Request in `curl` format:
+   Example of retrieving recorded request using `curl`:
 ```
 curl -H "Accept: application/hal+json" -X GET "http://localhost:port/requests"
 ```

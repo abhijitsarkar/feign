@@ -10,7 +10,7 @@ feign:
           uri: /feign/abc
         method:
           name: GET
-#        queries:
+#        headers:
 #          matcher: name.abhijitsarkar.javaee.feign.matcher.QueriesMatcher
 #          ignoreUnknown: true
 #          ignoreEmpty: true

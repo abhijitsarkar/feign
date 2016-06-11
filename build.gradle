@@ -1,58 +1,65 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
     }
     dependencies {
         classpath(
                 "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion",
+                "io.spring.gradle:dependency-management-plugin:$depMgmtPluginVersion"
         )
     }
 }
 
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 apply plugin: 'spring-boot'
-apply plugin: 'groovy'
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-group = 'name.abhijitsarkar.javaee'
-version = '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-starter-parent:$springBootVersion"
-    }
-}
 
 dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-web',
-//            'org.springframework.boot:spring-boot-starter-aop',
-            'org.springframework.boot:spring-boot-starter-data-mongodb',
-            'org.springframework.boot:spring-boot-starter-data-rest'
-    )
-    compileOnly("org.projectlombok:lombok:$lombokVersion")
-    runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+    testCompile(
+            'org.springframework.boot:spring-boot-starter-web'
     )
     testCompile(
-            'org.spockframework:spock-spring',
-            'org.springframework.boot:spring-boot-starter-test'
-    )
-    testRuntime(
-            'com.jayway.jsonpath:json-path'
+            project(':feign-core'),
+            project(':feign-persistence')
     )
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "$gradleVersion"
+allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'groovy'
+
+    if (!project.plugins.hasPlugin('io.spring.dependency-management')) {
+        apply plugin: 'io.spring.dependency-management'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    apply from: "$gradleCommonUrl"
+
+    group = 'name.abhijitsarkar.feign'
+    version = '1.0-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-starter-parent:$springBootVersion"
+        }
+    }
+
+    dependencies {
+        compileOnly("org.projectlombok:lombok:$lombokVersion")
+        runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+        )
+        testCompile(
+                'org.spockframework:spock-spring',
+                'org.springframework.boot:spring-boot-starter-test'
+        )
+        testRuntime(
+                'com.jayway.jsonpath:json-path'
+        )
+    }
 }
