@@ -6,7 +6,7 @@ that none of the other mock servers provide clean separation between the core fe
 ## Technologies Uses
    * [Spring Boot](http://projects.spring.io/spring-boot)
    * [Spring HATEOAS](http://projects.spring.io/spring-hateoas)
-   * [Spring Data MongoDB](http://projects.spring.io/spring-data-mongodb)(optional)
+   * [Spring Data MongoDB](http://projects.spring.io/spring-data-mongodb) (optional)
    * Embedded MongoDB (optional)
 
 ## Core Features
