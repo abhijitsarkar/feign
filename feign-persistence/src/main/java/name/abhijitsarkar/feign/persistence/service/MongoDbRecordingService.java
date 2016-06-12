@@ -22,7 +22,7 @@ import name.abhijitsarkar.feign.IdGenerator;
 import name.abhijitsarkar.feign.RecordingService;
 import name.abhijitsarkar.feign.Request;
 import name.abhijitsarkar.feign.persistence.domain.MongoDbRecordingRequest;
-import name.abhijitsarkar.feign.persistence.repository.RequestRepository;
+import name.abhijitsarkar.feign.persistence.repository.MongoDbRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.event.EventListener;
@@ -33,7 +33,7 @@ import org.springframework.context.event.EventListener;
 @Slf4j
 public class MongoDbRecordingService implements RecordingService {
     @Autowired
-    RequestRepository requestRepository;
+    MongoDbRequestRepository mongoDbRequestRepository;
     @Autowired
     IdGenerator idGenerator;
 
@@ -47,6 +47,6 @@ public class MongoDbRecordingService implements RecordingService {
 
         log.info("Recording request with id: {}.", id);
 
-        requestRepository.save(recordingRequest);
+        mongoDbRequestRepository.save(recordingRequest);
     }
 }

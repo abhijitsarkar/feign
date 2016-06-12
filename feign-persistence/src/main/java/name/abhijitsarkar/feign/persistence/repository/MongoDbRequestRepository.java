@@ -25,5 +25,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * @author Abhijit Sarkar
  */
 @RepositoryRestResource(collectionResourceRel = "requests", path = "requests")
-public interface RequestRepository extends MongoRepository<MongoDbRecordingRequest, String> {
+public interface MongoDbRequestRepository extends MongoRepository<MongoDbRecordingRequest, String> {
 }

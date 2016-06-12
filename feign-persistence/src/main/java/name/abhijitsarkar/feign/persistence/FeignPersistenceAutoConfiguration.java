@@ -18,10 +18,10 @@
 package name.abhijitsarkar.feign.persistence;
 
 import name.abhijitsarkar.feign.IdGenerator;
-import name.abhijitsarkar.feign.RecordingService;
 import name.abhijitsarkar.feign.persistence.domain.DefaultIdGenerator;
 import name.abhijitsarkar.feign.persistence.service.MongoDbRecordingService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +39,8 @@ public class FeignPersistenceAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RecordingService.class)
+    @ConditionalOnProperty(prefix = "feign.recording", name = "disable",
+            havingValue = "false", matchIfMissing = true)
     MongoDbRecordingService recordingService() {
         return new MongoDbRecordingService();
     }

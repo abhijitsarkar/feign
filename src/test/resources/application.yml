@@ -14,14 +14,10 @@ feign:
       request:
         path:
           uri: /feign/abc
-      response:
-        raw: body
     -
       request:
         method:
           name: GET
-      response:
-        raw: body
 
 ---
 
@@ -39,6 +35,17 @@ feign:
       request:
         path:
           uri: /feign/abc
-      response:
-        raw: body
+
+---
+
+spring:
+      profiles: p4
+feign:
+  recording.disable: true
+  mappings:
+    -
+      request:
+        path:
+          uri: /feign/abc
+
 

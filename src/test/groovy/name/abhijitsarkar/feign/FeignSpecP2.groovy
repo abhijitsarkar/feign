@@ -27,7 +27,7 @@ import static org.springframework.http.HttpMethod.GET
 /**
  * @author Abhijit Sarkar
  */
-@ActiveProfiles("p2")
+@ActiveProfiles('p2')
 class FeignSpecP2 extends AbstractFeignSpec {
     def "records request using ConstantIdGenerator"() {
         given:

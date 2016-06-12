@@ -28,7 +28,7 @@ import static org.springframework.http.HttpStatus.OK
 /**
  * @author Abhijit Sarkar
  */
-@ActiveProfiles("p1")
+@ActiveProfiles('p1')
 class FeignSpecP1 extends AbstractFeignSpec {
     def "exactly matches request path"() {
         given:

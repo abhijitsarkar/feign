@@ -17,28 +17,38 @@
 
 package name.abhijitsarkar.feign
 
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 
 import static org.springframework.http.HttpMethod.GET
+import static org.springframework.http.HttpStatus.OK
 
 /**
  * @author Abhijit Sarkar
  */
-@ActiveProfiles('p3')
-class FeignSpecP3 extends AbstractFeignSpec {
-    def "matches using AlwaysTrueMatcher"() {
+@ActiveProfiles('p4')
+class FeignSpecP4 extends AbstractFeignSpec {
+    def "disables recording"() {
         given:
-        def uri = uriBuilder.path('feign/xyz').build().toUri()
+        def uri = uriBuilder.path('feign/abc').build().toUri()
 
         when:
-        def ResponseEntity<String> response =
-                restTemplate.exchange(uri, GET, null, String)
+        HttpHeaders headers = new HttpHeaders()
+        headers.add('x-request-id', '1')
 
-        println(response)
+        HttpEntity<Void> entity = new HttpEntity<Void>(null, headers)
+
+        def ResponseEntity<String> response =
+                restTemplate.exchange(uri, GET, entity, String)
+        assert response.statusCode == OK
+
+        and:
+        response = restTemplate.exchange(new URI("http://localhost:$port/requests/1"), GET, null, String)
 
         then:
-        response.statusCode == HttpStatus.OK
+        response.statusCode == HttpStatus.NOT_FOUND
     }
 }
