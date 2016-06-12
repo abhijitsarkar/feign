@@ -1,6 +1,6 @@
 package name.abhijitsarkar.feign.core.web;
 
-import name.abhijitsarkar.feign.core.domain.Request;
+import name.abhijitsarkar.feign.Request;
 import name.abhijitsarkar.feign.core.model.Body;
 import name.abhijitsarkar.feign.core.model.FeignMapping;
 import name.abhijitsarkar.feign.core.model.ResponseProperties;
@@ -25,7 +25,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 @RestController
 public class FeignController {
     @Autowired
-    private FeignService feignService;
+    FeignService feignService;
 
     @RequestMapping(path = "/feign/**", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<?> all(Request request) {
@@ -44,7 +44,10 @@ public class FeignController {
             Body responseBody = rp.getBody();
 
             if (!isEmpty(responseBody.toString())) {
-                return new ResponseEntity<String>(responseBody.toString(), httpHeaders, HttpStatus.valueOf(rp.getStatus()));
+                return new ResponseEntity<String>(
+                        responseBody.getContent(),
+                        httpHeaders,
+                        HttpStatus.valueOf(rp.getStatus()));
             }
 
             return new ResponseEntity<Void>(httpHeaders, HttpStatus.valueOf(rp.getStatus()));

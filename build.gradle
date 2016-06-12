@@ -4,13 +4,12 @@ buildscript {
     }
     dependencies {
         classpath(
-                "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion",
                 "io.spring.gradle:dependency-management-plugin:$depMgmtPluginVersion"
         )
     }
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'groovy'
 
 dependencies {
     testCompile(
@@ -26,10 +25,7 @@ allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'groovy'
-
-    if (!project.plugins.hasPlugin('io.spring.dependency-management')) {
-        apply plugin: 'io.spring.dependency-management'
-    }
+    apply plugin: 'io.spring.dependency-management'
 
     repositories {
         mavenLocal()
@@ -56,9 +52,7 @@ allprojects {
         )
         testCompile(
                 'org.spockframework:spock-spring',
-                'org.springframework.boot:spring-boot-starter-test'
-        )
-        testRuntime(
+                'org.springframework.boot:spring-boot-starter-test',
                 'com.jayway.jsonpath:json-path'
         )
     }

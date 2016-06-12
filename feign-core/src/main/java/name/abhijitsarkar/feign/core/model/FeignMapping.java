@@ -6,7 +6,7 @@ import lombok.Getter;
  * @author Abhijit Sarkar
  */
 @Getter
-public class FeignMapping {
+public class FeignMapping extends IgnorableRequestProperties {
     private RequestProperties request;
     private ResponseProperties response;
 

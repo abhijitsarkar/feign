@@ -1,6 +1,4 @@
-package name.abhijitsarkar.feign.core.model;
-
-import name.abhijitsarkar.feign.core.domain.Request;
+package name.abhijitsarkar.feign;
 
 /**
  * @author Abhijit Sarkar

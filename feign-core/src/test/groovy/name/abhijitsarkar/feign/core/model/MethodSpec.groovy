@@ -1,6 +1,5 @@
 package name.abhijitsarkar.feign.core.model
 
-import name.abhijitsarkar.feign.core.matcher.MethodMatcher
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -34,18 +33,5 @@ class MethodSpec extends Specification {
 
         where:
         ignoreCase << [null, Boolean.TRUE, Boolean.FALSE]
-    }
-
-    @Unroll
-    def "sets matcher when set to #matcher"() {
-        setup:
-        method = new Method()
-        method.matcher = matcher
-
-        expect:
-        method.matcher == (matcher ?: MethodMatcher)
-
-        where:
-        matcher << [null, MethodMatcher, TestMatcher]
     }
 }

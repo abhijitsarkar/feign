@@ -1,6 +1,6 @@
 package name.abhijitsarkar.feign.core.web;
 
-import name.abhijitsarkar.feign.core.domain.Request;
+import name.abhijitsarkar.feign.Request;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;

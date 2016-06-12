@@ -2,7 +2,6 @@ package name.abhijitsarkar.feign.core.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import name.abhijitsarkar.feign.core.matcher.BodyMatcher;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -22,14 +20,10 @@ import static org.springframework.util.StringUtils.isEmpty;
  * @author Abhijit Sarkar
  */
 @Getter
-public class Body extends AbstractIgnorableRequestPart {
-    private Class<? extends Predicate<RequestProperties>> matcher;
-
-    @Setter
+@Setter
+public class Body extends IgnorableRequestProperties {
     private String raw;
-    @Setter
     private String url;
-    @Setter
     private String classpath;
 
     public Body() {
@@ -38,8 +32,6 @@ public class Body extends AbstractIgnorableRequestPart {
                 .count();
 
         checkState(count != 1, "Ambiguous request body declaration.");
-
-        setMatcher(matcher);
     }
 
     public String getContent() {
@@ -63,9 +55,5 @@ public class Body extends AbstractIgnorableRequestPart {
         }
 
         return "";
-    }
-
-    public void setMatcher(Class<? extends Predicate<RequestProperties>> matcher) {
-        this.matcher = (matcher == null) ? BodyMatcher.class : matcher;
     }
 }

@@ -1,5 +1,7 @@
 package name.abhijitsarkar.feign.core.matcher
 
+import name.abhijitsarkar.feign.Request
+import name.abhijitsarkar.feign.core.model.FeignMapping
 import name.abhijitsarkar.feign.core.model.Method
 import name.abhijitsarkar.feign.core.model.RequestProperties
 import spock.lang.Specification
@@ -7,12 +9,15 @@ import spock.lang.Specification
 /**
  * @author Abhijit Sarkar
  */
-class MethodMatcherSpec extends Specification {
-    def methodMatcher
+class DefaultMethodMatcherSpec extends Specification {
+    def methodMatcher = new DefaultMethodMatcher()
+    def feignMapping
     def requestProperties
 
     def setup() {
+        feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
+        feignMapping.request = requestProperties
     }
 
     def "matches exact method"() {
@@ -20,11 +25,10 @@ class MethodMatcherSpec extends Specification {
         def method = new Method()
         method.name = 'GET'
         requestProperties.method = method
-
-        methodMatcher = new MethodMatcher('GET')
+        def request = Request.builder().method('GET').build()
 
         expect:
-        methodMatcher.test(requestProperties)
+        methodMatcher.apply(request, feignMapping)
     }
 
     def "matches regex method"() {
@@ -32,44 +36,32 @@ class MethodMatcherSpec extends Specification {
         def method = new Method()
         method.name = '.*'
         requestProperties.method = method
-
-        methodMatcher = new MethodMatcher('GET')
+        def request = Request.builder().method('GET').build()
 
         expect:
-        methodMatcher.test(requestProperties)
+        methodMatcher.apply(request, feignMapping)
     }
 
     def "matches ignore case"() {
         setup:
         def method = new Method()
-        method.ignoreCase = true
         method.name = 'get'
+        method.ignoreCase = true
         requestProperties.method = method
-
-        methodMatcher = new MethodMatcher('GET')
+        def request = Request.builder().method('GET').build()
 
         expect:
-        methodMatcher.test(requestProperties)
+        methodMatcher.apply(request, feignMapping)
     }
 
     def "does not match method"() {
         setup:
         def method = new Method()
-        method.ignoreCase = true
-        method.name = 'get'
+        method.name = 'POST'
         requestProperties.method = method
-
-        methodMatcher = new MethodMatcher('POST')
+        def request = Request.builder().method('GET').build()
 
         expect:
-        !methodMatcher.test(requestProperties)
-    }
-
-    def "throws exception if initialized with null method"() {
-        when:
-        new MethodMatcher(null)
-
-        then:
-        thrown(NullPointerException)
+        !methodMatcher.apply(request, feignMapping)
     }
 }

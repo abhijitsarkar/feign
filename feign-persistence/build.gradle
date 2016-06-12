@@ -1,6 +1,7 @@
 dependencies {
     compile(
-            'org.springframework.boot:spring-boot-starter-data-mongodb'
+            'org.springframework.boot:spring-boot-starter-data-mongodb',
+            'org.springframework.boot:spring-boot-starter-data-rest'
     )
-    compile project(':feign-core')
+    compile project(':feign-api')
 }

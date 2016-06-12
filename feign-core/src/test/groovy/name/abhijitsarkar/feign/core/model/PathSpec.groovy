@@ -1,6 +1,5 @@
 package name.abhijitsarkar.feign.core.model
 
-import name.abhijitsarkar.feign.core.matcher.PathMatcher
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -34,18 +33,5 @@ class PathSpec extends Specification {
 
         where:
         ignoreCase << [null, Boolean.TRUE, Boolean.FALSE]
-    }
-
-    @Unroll
-    def "sets matcher when set to #matcher"() {
-        setup:
-        path = new Path()
-        path.matcher = matcher
-
-        expect:
-        path.matcher == (matcher ?: PathMatcher)
-
-        where:
-        matcher << [null, PathMatcher, TestMatcher]
     }
 }

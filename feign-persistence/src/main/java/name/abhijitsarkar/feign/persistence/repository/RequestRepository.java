@@ -1,10 +1,12 @@
 package name.abhijitsarkar.feign.persistence.repository;
 
-import name.abhijitsarkar.feign.core.domain.Request;
+import name.abhijitsarkar.feign.persistence.domain.MongoDbRecordingRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
  * @author Abhijit Sarkar
  */
-public interface RequestRepository extends MongoRepository<Request, String> {
+@RepositoryRestResource(collectionResourceRel = "requests", path = "requests")
+public interface RequestRepository extends MongoRepository<MongoDbRecordingRequest, String> {
 }

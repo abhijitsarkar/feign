@@ -2,4 +2,6 @@ dependencies {
     compile(
             'org.springframework.boot:spring-boot-starter-data-rest'
     )
+    compile project(':feign-api')
+    testRuntime("cglib:cglib-nodep:$cglibVersion")
 }

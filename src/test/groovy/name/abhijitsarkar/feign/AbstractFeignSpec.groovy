@@ -1,8 +1,6 @@
 package name.abhijitsarkar.feign
 
-import name.abhijitsarkar.feign.core.FeignCoreAutoConfiguration
 import name.abhijitsarkar.feign.core.web.FeignController
-import name.abhijitsarkar.feign.persistence.FeignPersistenceAutoConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationConfiguration
@@ -15,7 +13,7 @@ import spock.lang.Specification
 /**
  * @author Abhijit Sarkar
  */
-@SpringApplicationConfiguration([FeignApp, FeignCoreAutoConfiguration, FeignPersistenceAutoConfiguration])
+@SpringApplicationConfiguration([FeignApp, FeignConfiguration])
 @WebIntegrationTest(randomPort = true)
 abstract class AbstractFeignSpec extends Specification {
     @Autowired

@@ -1,4 +1,5 @@
 rootProject.name = 'feign'
 include 'feign-core'
 include 'feign-persistence'
+include 'feign-api'
 

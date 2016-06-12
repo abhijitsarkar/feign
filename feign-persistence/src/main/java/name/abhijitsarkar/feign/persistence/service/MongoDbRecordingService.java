@@ -1,47 +1,35 @@
 package name.abhijitsarkar.feign.persistence.service;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.core.domain.Request;
-import name.abhijitsarkar.feign.core.model.FeignMapping;
-import name.abhijitsarkar.feign.core.model.IdGenerator;
-import name.abhijitsarkar.feign.core.service.RecordingService;
+import name.abhijitsarkar.feign.IdGenerator;
+import name.abhijitsarkar.feign.RecordingService;
+import name.abhijitsarkar.feign.Request;
+import name.abhijitsarkar.feign.persistence.domain.MongoDbRecordingRequest;
 import name.abhijitsarkar.feign.persistence.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Method;
-import java.util.Optional;
+import org.springframework.context.PayloadApplicationEvent;
+import org.springframework.context.event.EventListener;
 
 /**
  * @author Abhijit Sarkar
  */
-@Service
 @Slf4j
 public class MongoDbRecordingService implements RecordingService {
     @Autowired
     private RequestRepository requestRepository;
+    @Autowired
+    IdGenerator idGenerator;
 
-    public void record(Request request, Optional<FeignMapping> mapping) {
-        mapping.ifPresent(m -> {
-            boolean record = m.getRequest().isRecord();
+    @EventListener
+    public void record(PayloadApplicationEvent<Request> requestEvent) {
+        Request request = requestEvent.getPayload();
 
-            if (!record) {
-                return;
-            }
+        String id = idGenerator.id(request);
 
-            Class<? extends IdGenerator> clazz = m.getRequest().getIdGenerator();
+        MongoDbRecordingRequest recordingRequest = new MongoDbRecordingRequest(request, id);
 
-            try {
-                Method idGeneratorMethod = clazz.getDeclaredMethod("id", Request.class);
-                Object id = idGeneratorMethod.invoke(clazz.newInstance(), request);
+        log.info("Recording request with id: {}.", id);
 
-                log.info("Recording request with id: {}.", id);
-
-                requestRepository.save(request.toBuilder()
-                        .id(id.toString()).build());
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        requestRepository.save(recordingRequest);
     }
 }
