@@ -141,7 +141,10 @@ or create issues. Just do not expect me to complete your assignment for you.
 
    * Match ignoring case: Set `ignoreCase` true for properties shown in the above `application.yml`.
 
-   * Disable recording: Set the property `feign.recording.disable: true` in the `application.yml`.
+   * Disable recording: Set the property `feign.recording.disable: true` in the `application.yml`. Currently, there is
+   no support for disabling recording for certain requests, but you can use Spring profiles to somewhat achieve this.
+   You can also disable recording globally and then provide your own recording service with whatever
+   filtering logic you need.
 
    * Use a different data store for storing recorded requests: If you are using Spring Data, you need a domain class,
    an id generator, a request repository and a recording service. Look in the `feign-persistence` module for
