@@ -16,8 +16,8 @@ that none of the other mock servers provide clean separation between the core fe
             spring:
                 profiles: p1
             feign:
-              # set false to disable all matchers
-              matcher.enable: true
+              # set true to disable default matchers
+              matchers.disable: false
               mappings:
                 -
                   request:
@@ -67,12 +67,12 @@ that none of the other mock servers provide clean separation between the core fe
    url resource (including file system URL), or classpath resource.
    * **You are in charge**: Want complete control over the request/response mapping? You got it!
    Just create your own mapper classes as Spring beans and they are in. If you want the default matchers
-   to be disabled, set the property `feign.matcher.enable: false` in the `application.yml`.
+   to be disabled, set the property `feign.matchers.disable: true` in the `application.yml`.
    * **Optional recording of requests**: The request are saved in a backend data store
    and served on a platter using Spring Data REST. Just include the module `feign-persistence`
    in your build file. By default, an embedded MongoDB is used but you can easily swap it out
    with another persistence of your choice. Look into the `feign-persistence` to see how.
-   * **Extensive test coverage**: You know you can trust code when you see more than hundreds of tests.
+   * **Extensive test coverage**: You know you can trust code when you see close to hundred tests in a codebase this small.
 
    Example of retrieving recorded request using id:
 ```

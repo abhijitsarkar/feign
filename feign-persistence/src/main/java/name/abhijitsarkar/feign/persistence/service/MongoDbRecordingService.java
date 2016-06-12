@@ -33,7 +33,7 @@ import org.springframework.context.event.EventListener;
 @Slf4j
 public class MongoDbRecordingService implements RecordingService {
     @Autowired
-    private RequestRepository requestRepository;
+    RequestRepository requestRepository;
     @Autowired
     IdGenerator idGenerator;
 

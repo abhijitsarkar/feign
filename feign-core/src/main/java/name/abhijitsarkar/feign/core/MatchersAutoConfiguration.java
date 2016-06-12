@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Abhijit Sarkar
  */
 @Configuration
-@ConditionalOnProperty(prefix = "feign.matchers", name = "enable",
-        havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "feign.matchers", name = "disable",
+        havingValue = "false", matchIfMissing = true)
 public class MatchersAutoConfiguration {
     @Bean
     DefaultPathMatcher defaultPathMatcher() {

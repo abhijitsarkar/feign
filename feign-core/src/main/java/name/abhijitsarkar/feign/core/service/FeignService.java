@@ -44,7 +44,6 @@ public class FeignService {
     @Autowired
     Collection<BiFunction<Request, FeignMapping, Boolean>> matchers;
 
-    @SuppressWarnings("unchecked")
     public Optional<FeignMapping> findFeignMapping(Request request) {
         Optional<FeignMapping> feignMapping = feignProperties.getMappings().stream()
                 .filter(mapping -> {

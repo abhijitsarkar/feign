@@ -32,6 +32,7 @@ class IgnorableRequestPropertiesSpec extends Specification {
     def "sets #ignoreProperty"() {
         setup:
         def testUnit = new TestIgnorableRequestProperties()
+        def values = [null, Boolean.TRUE, Boolean.FALSE]
 
         expect:
         !values.collect {
@@ -44,7 +45,5 @@ class IgnorableRequestPropertiesSpec extends Specification {
         'ignoreUnknown'  | _
         'ignoreCase'     | _
         'ignoreEmpty'    | _
-
-        values << [null, Boolean.TRUE, Boolean.FALSE]
     }
 }

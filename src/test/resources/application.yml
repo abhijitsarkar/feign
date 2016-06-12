@@ -33,7 +33,7 @@ spring:
 spring:
       profiles: p3
 feign:
-  matchers.enable: false
+  matchers.disable: true
   mappings:
     -
       request:

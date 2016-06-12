@@ -43,7 +43,7 @@ public class DefaultIdGenerator implements IdGenerator {
             log.info("Generated random id: {}.", requestId);
         } else {
             requestId = headers.get("x-request-id");
-            log.info("Using id from request: {}.", requestId);
+            log.info("Found id from request: {}.", requestId);
         }
 
         return requestId;

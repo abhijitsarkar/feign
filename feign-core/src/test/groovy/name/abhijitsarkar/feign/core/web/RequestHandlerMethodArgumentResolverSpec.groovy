@@ -64,7 +64,7 @@ class RequestHandlerMethodArgumentResolverSpec extends Specification {
         new RequestHandlerMethodArgumentResolver().supportsParameter(parameter)
     }
 
-    def "supports Request subclasses"() {
+    def "supports Request subclass"() {
         setup:
         MethodParameter parameter = Mock(MethodParameter)
         parameter.parameterType >> TestRequest
