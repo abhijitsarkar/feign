@@ -168,7 +168,7 @@ or create issues. Just do not expect me to complete your assignment for you.
         Same can be done for all the default matchers in the `feign-core` module.
 
    * Add custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
-   be added to the list of matchers.
+   be added to the list of matchers. For a mapping to be found, all matchers must match the request.
 
    * Provide custom id generator: Feign ships with a default id generator that generates an id according to the
    following logic:
