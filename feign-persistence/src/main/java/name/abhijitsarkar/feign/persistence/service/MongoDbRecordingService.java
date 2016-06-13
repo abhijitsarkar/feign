@@ -18,10 +18,8 @@
 package name.abhijitsarkar.feign.persistence.service;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.IdGenerator;
+import name.abhijitsarkar.feign.RecordingRequest;
 import name.abhijitsarkar.feign.RecordingService;
-import name.abhijitsarkar.feign.Request;
-import name.abhijitsarkar.feign.persistence.domain.MongoDbRecordingRequest;
 import name.abhijitsarkar.feign.persistence.repository.MongoDbRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.PayloadApplicationEvent;
@@ -35,16 +33,11 @@ import org.springframework.context.event.EventListener;
 public class MongoDbRecordingService implements RecordingService {
     @Autowired
     MongoDbRequestRepository mongoDbRequestRepository;
-    @Autowired
-    IdGenerator idGenerator;
 
     @EventListener
-    public void record(PayloadApplicationEvent<Request> requestEvent) {
-        Request request = requestEvent.getPayload();
-
-        String id = idGenerator.id(request);
-
-        MongoDbRecordingRequest recordingRequest = new MongoDbRecordingRequest(request, id);
+    public void record(PayloadApplicationEvent<RecordingRequest> requestEvent) {
+        RecordingRequest recordingRequest = requestEvent.getPayload();
+        String id = recordingRequest.getId();
 
         log.info("Recording request with id: {}.", id);
 

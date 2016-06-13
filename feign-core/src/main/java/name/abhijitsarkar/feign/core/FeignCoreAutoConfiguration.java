@@ -17,7 +17,11 @@
 
 package name.abhijitsarkar.feign.core;
 
+import name.abhijitsarkar.feign.IdGenerator;
+import name.abhijitsarkar.feign.core.model.DefaultIdGenerator;
 import name.abhijitsarkar.feign.core.web.RequestHandlerMethodArgumentResolver;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -34,5 +38,11 @@ public class FeignCoreAutoConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new RequestHandlerMethodArgumentResolver());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IdGenerator.class)
+    IdGenerator defaultIdGenerator() {
+        return new DefaultIdGenerator();
     }
 }

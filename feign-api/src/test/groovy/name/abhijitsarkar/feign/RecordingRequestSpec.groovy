@@ -15,16 +15,14 @@
  *
  */
 
-package name.abhijitsarkar.feign.persistence.domain
+package name.abhijitsarkar.feign
 
-import name.abhijitsarkar.feign.Request
 import spock.lang.Specification
-
 
 /**
  * @author Abhijit Sarkar
  */
-class MongoDbRecordingRequestSpec extends Specification {
+class RecordingRequestSpec extends Specification {
     def "copies properties from given request"() {
         setup:
         Request request = Request.builder()
@@ -36,7 +34,7 @@ class MongoDbRecordingRequestSpec extends Specification {
                 .build()
 
         when:
-        def recordingRequest = new MongoDbRecordingRequest(request, 'id')
+        def recordingRequest = new RecordingRequest(request, 'id')
 
         then:
         recordingRequest.id == 'id'

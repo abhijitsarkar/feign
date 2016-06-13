@@ -15,33 +15,32 @@
  *
  */
 
-package name.abhijitsarkar.feign.persistence.domain
+package name.abhijitsarkar.feign;
 
-import name.abhijitsarkar.feign.Request
-import spock.lang.Specification
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
 
 /**
  * @author Abhijit Sarkar
  */
-class DefaultIdGeneratorSpec extends Specification {
-    def idGenerator = new DefaultIdGenerator()
+@Getter
+@NoArgsConstructor
+@ToString
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.ImmutableField", "PMD.SingularField"})
+public class RecordingRequest extends Request {
+    @Id
+    private String id;
 
-    def "uses value from request id header"() {
-        setup:
-        Request request = Request.builder()
-                .headers(['x-request-id': 'id'])
-                .build()
+    public RecordingRequest(Request request, String id) {
+        super();
+        path = request.getPath();
+        method = request.getMethod();
+        queryParams = request.getQueryParams();
+        headers = request.getHeaders();
+        body = request.getBody();
 
-        expect:
-        idGenerator.id(request) == 'id'
-    }
-
-    def "generates random id if request id header is missing"() {
-        setup:
-        Request request = Request.builder().build()
-
-        expect:
-        idGenerator.id(request)
+        this.id = id;
     }
 }

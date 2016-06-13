@@ -17,13 +17,13 @@
 
 package name.abhijitsarkar.feign.persistence.repository;
 
-import name.abhijitsarkar.feign.persistence.domain.MongoDbRecordingRequest;
+import name.abhijitsarkar.feign.RecordingRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
  * @author Abhijit Sarkar
  */
-@RepositoryRestResource(collectionResourceRel = "requests", path = "requests")
-public interface MongoDbRequestRepository extends MongoRepository<MongoDbRecordingRequest, String> {
+@RepositoryRestResource(collectionResourceRel = "requests", path = "requests", itemResourceRel = "request")
+public interface MongoDbRequestRepository extends MongoRepository<RecordingRequest, String> {
 }

@@ -15,12 +15,8 @@
  *
  */
 
-package name.abhijitsarkar.feign;
-
-/**
- * @author Abhijit Sarkar
- */
-@SuppressWarnings({"PMD.ShortMethodName"})
-public interface IdGenerator {
-    String id(Request request);
+dependencies {
+    compile(
+            'org.springframework.data:spring-data-commons'
+    )
 }

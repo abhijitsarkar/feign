@@ -15,33 +15,33 @@
  *
  */
 
-package name.abhijitsarkar.feign.persistence.domain;
+package name.abhijitsarkar.feign.core.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import name.abhijitsarkar.feign.IdGenerator;
 import name.abhijitsarkar.feign.Request;
-import org.springframework.data.annotation.Id;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Abhijit Sarkar
  */
-@Getter
-@NoArgsConstructor
+@Slf4j
 @ToString
-@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.ImmutableField", "PMD.SingularField"})
-public class MongoDbRecordingRequest extends Request {
-    @Id
-    private String id;
+@SuppressWarnings({"PMD.ShortMethodName"})
+public class DefaultIdGenerator implements IdGenerator {
+    @Override
+    public String id(Request request) {
+        Pattern pattern = Pattern.compile("(?:/?)([^/]+)(?:.*)");
+        Matcher matcher = pattern.matcher(request.getPath());
 
-    public MongoDbRecordingRequest(Request request, String id) {
-        super();
-        path = request.getPath();
-        method = request.getMethod();
-        queryParams = request.getQueryParams();
-        headers = request.getHeaders();
-        body = request.getBody();
+        String prefix = matcher.matches() ? matcher.group(1) : "unknown";
 
-        this.id = id;
+        return String.format("%s-%s",
+                matcher.group(1),
+                request.getPath().hashCode());
     }
 }

@@ -18,6 +18,8 @@
 package name.abhijitsarkar.feign.core.model;
 
 import lombok.Getter;
+import lombok.Setter;
+import name.abhijitsarkar.feign.IdGenerator;
 
 /**
  * @author Abhijit Sarkar
@@ -25,6 +27,8 @@ import lombok.Getter;
 @Getter
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
 public class RequestProperties {
+    @Setter
+    private Class<? extends IdGenerator> idGenerator;
     private Path path;
     private Method method;
     private Queries queries;

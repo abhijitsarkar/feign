@@ -15,24 +15,33 @@
  *
  */
 
-package name.abhijitsarkar.feign.persistence;
+package name.abhijitsarkar.feign.core.model
 
-import name.abhijitsarkar.feign.persistence.service.MongoDbRecordingService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-
+import name.abhijitsarkar.feign.Request
+import spock.lang.Specification
 /**
  * @author Abhijit Sarkar
  */
-@Configuration
-@ComponentScan
-public class FeignPersistenceAutoConfiguration {
-    @Bean
-    @ConditionalOnProperty(prefix = "feign.recording", name = "disable",
-            havingValue = "false", matchIfMissing = true)
-    MongoDbRecordingService recordingService() {
-        return new MongoDbRecordingService();
+class DefaultIdGeneratorSpec extends Specification {
+    def idGenerator = new DefaultIdGenerator()
+
+    def "generates id for absolute path"() {
+        given:
+        Request request = Request.builder()
+                .path('/abc/xyz')
+                .build();
+
+        expect:
+        idGenerator.id(request).startsWith('abc-')
+    }
+
+    def "generates id for relative path"() {
+        given:
+        Request request = Request.builder()
+                .path('abc/xyz')
+                .build();
+
+        expect:
+        idGenerator.id(request).startsWith('abc-')
     }
 }

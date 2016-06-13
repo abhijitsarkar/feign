@@ -17,8 +17,8 @@
 
 package name.abhijitsarkar.feign.persistence.service
 
+import name.abhijitsarkar.feign.RecordingRequest
 import name.abhijitsarkar.feign.Request
-import name.abhijitsarkar.feign.persistence.domain.DefaultIdGenerator
 import name.abhijitsarkar.feign.persistence.repository.MongoDbRequestRepository
 import org.springframework.context.PayloadApplicationEvent
 import spock.lang.Specification
@@ -31,21 +31,20 @@ class MongoDbRecordingServiceSpec extends Specification {
         def recordingService = new MongoDbRecordingService()
         def requestRepository = Mock(MongoDbRequestRepository)
         recordingService.mongoDbRequestRepository = requestRepository
-        recordingService.idGenerator = new DefaultIdGenerator()
 
         def request = Request.builder()
                 .path('/a')
                 .method('GET')
                 .build()
 
-        def event = new PayloadApplicationEvent<Request>(this, request)
+        def event = new PayloadApplicationEvent<RecordingRequest>(this, new RecordingRequest(request, '1'))
 
         when:
         recordingService.record(event)
 
         then:
         1 * requestRepository.save({
-            it.id != null
+            it.id == 1
             it.path == request.path
             it.method == request.method
         })

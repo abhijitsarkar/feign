@@ -21,6 +21,7 @@ that none of the other mock servers provide clean separation between the core fe
               mappings:
                 -
                   request:
+                    idGenerator: name.abhijitsarkar.feign.core.model.DefaultIdGenerator
                     path:
                       uri: /feign/abc
                       ignoreCase: false
@@ -98,6 +99,51 @@ that none of the other mock servers provide clean separation between the core fe
             }
          }
 
+      Example of searching for all recorded requests:
+
+         curl -H "Accept: application/hal+json" -X GET "http://localhost:63440/requests/1"
+
+      Response:
+
+          {
+            "_embedded": {
+                "requests": [{
+                    "path": "/feign/xyz",
+                    "method": "GET",
+                    "queryParams": {},
+                    "headers": {
+                        "host": "localhost:55993",
+                        "connection": "keep-alive",
+                        "user-agent": "Java/1.8.0_66",
+                        "accept": "text/plain, application/json, application/*+json, */*"
+                    },
+                    "body": "",
+                    "_links": {
+                        "self": {
+                            "href": "http://localhost:55993/requests/feign-1357738284"
+                        },
+                        "request": {
+                            "href": "http://localhost:55993/requests/feign-1357738284"
+                        }
+                    }
+                }]
+            },
+            "_links": {
+                "self": {
+                    "href": "http://localhost:55993/requests"
+                },
+                "profile": {
+                    "href": "http://localhost:55993/profile/requests"
+                }
+            },
+            "page": {
+                "size": 20,
+                "totalElements": 1,
+                "totalPages": 1,
+                "number": 0
+            }
+          }
+
    * **Extensive test coverage**: You know you can trust code when you see close to hundred tests in a codebase this small.
 
    * **You are in charge**: I am not going to force a web server down your throat. No more tightly coupled code
@@ -127,11 +173,19 @@ or create issues. Just do not expect me to complete your assignment for you.
    * Provide custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
    be added to the list of matchers.
 
-   * Provide custom id generator: Feign ships with a default id generator that first looks in the request for a
-   header named `x-request-id`. If found, it uses that value as the id for saving the request. If not, it generates
-   a random UUID.
-   To provide a custom id generator, create a bean that implements `IdGenerator`. The default one will be
+   * Provide custom id generator: Feign ships with a default id generator that generates an id according to the
+   following logic:
+
+      Calculate the URI hash and append a `{prefix}-` to it. The prefix is generated as follows:
+      * Extract the first segment of the URI without any slash.
+      For example, given the path `/feign/xyz`, the generated id is `feign-1357738284`.
+      * If failed to extract the first segment of the URI, use `unknown`.
+
+     To provide a custom id generator, create a bean that implements `IdGenerator`. The default one will be
    automatically disabled.
+
+     You can also specify an id generator for a request as shown in the above `application.yml`. Request scoped
+   id generators trump the global one.
 
    * Match even parts of the image have no corresponding properties in the Feign mapping: Set `ignoreUnknown`
    true for properties shown in the above `application.yml`.
@@ -146,10 +200,10 @@ or create issues. Just do not expect me to complete your assignment for you.
    You can also disable recording globally and then provide your own recording service with whatever
    filtering logic you need.
 
-   * Use a different data store for storing recorded requests: If you are using Spring Data, you need a domain class,
-   an id generator, a request repository and a recording service. Look in the `feign-persistence` module for
-   a MongoDB version of these.
-   If you are not using Spring Data, you can hand roll your persistence logic. Trouble is, Spring Data REST
+   * Use a different data store for storing recorded requests: If you are using Spring Data,
+   a request repository and a recording service. Look in the `feign-persistence` module for a MongoDB version of these.
+
+      If you are not using Spring Data, you can hand roll your persistence logic. Trouble is, Spring Data REST
    depends on Spring Data and thus, without it, you will have to write all the code for the REST endpoints to manage your
    request data store. Seriously, unless you are paid by hour, do not do it.
 
