@@ -15,12 +15,15 @@
  *
  */
 
-package name.abhijitsarkar.feign;
+package name.abhijitsarkar.feign.persistence;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import name.abhijitsarkar.feign.Request;
 import org.springframework.data.annotation.Id;
+
+import java.util.Objects;
 
 /**
  * @author Abhijit Sarkar
@@ -42,5 +45,23 @@ public class RecordingRequest extends Request {
         body = request.getBody();
 
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RecordingRequest that = (RecordingRequest) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

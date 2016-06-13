@@ -17,17 +17,23 @@
 
 package name.abhijitsarkar.feign.core.model;
 
-import lombok.Setter;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 /**
  * @author Abhijit Sarkar
  */
-@Setter
-@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.AbstractClassWithoutAbstractMethod"})
+@SuppressWarnings({"PMD.AbstractClassWithoutAbstractMethod", "PMD.BeanMembersShouldSerialize"})
 public abstract class AbstractIgnorableRequestProperties {
     private Boolean ignoreUnknown;
     private Boolean ignoreEmpty;
     private Boolean ignoreCase;
+
+    public AbstractIgnorableRequestProperties() {
+        setIgnoreCase(null);
+        setIgnoreEmpty(null);
+        setIgnoreUnknown(null);
+    }
 
     public Boolean isIgnoreUnknown() {
         return ignoreUnknown;
@@ -39,5 +45,17 @@ public abstract class AbstractIgnorableRequestProperties {
 
     public Boolean isIgnoreCase() {
         return ignoreCase;
+    }
+
+    public void setIgnoreCase(Boolean ignoreCase) {
+        this.ignoreCase = (ignoreCase == null) ? FALSE : ignoreCase;
+    }
+
+    public void setIgnoreUnknown(Boolean ignoreUnknown) {
+        this.ignoreUnknown = (ignoreUnknown == null) ? TRUE : ignoreUnknown;
+    }
+
+    public void setIgnoreEmpty(Boolean ignoreEmpty) {
+        this.ignoreEmpty = (ignoreEmpty == null) ? TRUE : ignoreEmpty;
     }
 }

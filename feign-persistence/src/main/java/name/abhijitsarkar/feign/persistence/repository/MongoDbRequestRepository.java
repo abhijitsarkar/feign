@@ -17,7 +17,7 @@
 
 package name.abhijitsarkar.feign.persistence.repository;
 
-import name.abhijitsarkar.feign.RecordingRequest;
+import name.abhijitsarkar.feign.persistence.RecordingRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

@@ -17,8 +17,6 @@
 
 package name.abhijitsarkar.feign
 
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
@@ -36,13 +34,8 @@ class FeignSpecP4 extends AbstractFeignSpec {
         def uri = uriBuilder.path('feign/abc').build().toUri()
 
         when:
-        HttpHeaders headers = new HttpHeaders()
-        headers.add('x-request-id', '1')
-
-        HttpEntity<Void> entity = new HttpEntity<Void>(null, headers)
-
         def ResponseEntity<String> response =
-                restTemplate.exchange(uri, GET, entity, String)
+                restTemplate.exchange(uri, GET, null, String)
         assert response.statusCode == OK
 
         and:

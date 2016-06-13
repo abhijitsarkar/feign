@@ -17,31 +17,34 @@
 
 package name.abhijitsarkar.feign.core.model;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import name.abhijitsarkar.feign.persistence.IdGenerator;
 
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.IdGenerator;
-import name.abhijitsarkar.feign.Request;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static java.lang.Boolean.FALSE;
 
 /**
  * @author Abhijit Sarkar
  */
-@Slf4j
-@ToString
-@SuppressWarnings({"PMD.ShortMethodName"})
-public class DefaultIdGenerator implements IdGenerator {
-    @Override
-    public String id(Request request) {
-        Pattern pattern = Pattern.compile("(?:/?)([^/]+)(?:.*)");
-        Matcher matcher = pattern.matcher(request.getPath());
+@Getter
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
+public class RecordingProperties {
+    @Getter(AccessLevel.NONE)
+    private Boolean disable;
 
-        String prefix = matcher.matches() ? matcher.group(1) : "unknown";
+    @Setter
+    private Class<? extends IdGenerator> idGenerator;
 
-        return String.format("%s-%s",
-                matcher.group(1),
-                request.getPath().hashCode());
+    public RecordingProperties() {
+        setDisable(null);
+    }
+
+    public Boolean isDisable() {
+        return disable;
+    }
+
+    public void setDisable(Boolean disable) {
+        this.disable = (disable == null) ? FALSE : disable;
     }
 }

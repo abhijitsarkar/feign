@@ -15,22 +15,14 @@
  *
  */
 
-package name.abhijitsarkar.feign
+package name.abhijitsarkar.feign.persistence;
 
-import groovy.util.logging.Slf4j
-import name.abhijitsarkar.feign.core.model.FeignMapping
-
-import java.util.function.BiFunction
+import name.abhijitsarkar.feign.Request;
 
 /**
  * @author Abhijit Sarkar
  */
-@Slf4j
-class AlwaysTrueMatcher implements BiFunction<Request, FeignMapping, Boolean> {
-    @Override
-    Boolean apply(Request request, FeignMapping feignMapping) {
-        log.info("Returning true without matching.")
-
-        return true
-    }
+@SuppressWarnings({"PMD.ShortMethodName"})
+public interface IdGenerator {
+    String id(Request request);
 }

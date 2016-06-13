@@ -29,21 +29,56 @@ class AbstractIgnorableRequestPropertiesSpec extends Specification {
     }
 
     @Unroll
-    def "sets #ignoreProperty"() {
+    def "sets ignoreUnknown to #output when given #input"() {
         setup:
         def testUnit = new TestAbstractIgnorableRequestProperties()
-        def values = [null, Boolean.TRUE, Boolean.FALSE]
 
-        expect:
-        !values.collect {
-            testUnit."$ignoreProperty" = it
-            testUnit."$ignoreProperty" == it
-        }.contains(false)
+        when:
+        testUnit.ignoreUnknown = input
+
+        then:
+        testUnit.ignoreUnknown == output
 
         where:
-        ignoreProperty   | _
-        'ignoreUnknown'  | _
-        'ignoreCase'     | _
-        'ignoreEmpty'    | _
+        input           | output
+        null            | Boolean.TRUE
+        Boolean.TRUE    | Boolean.TRUE
+        Boolean.FALSE   | Boolean.FALSE
+    }
+
+    @Unroll
+    def "sets ignoreEmpty to #output when given #input"() {
+        setup:
+        def testUnit = new TestAbstractIgnorableRequestProperties()
+
+        when:
+        testUnit.ignoreEmpty = input
+
+        then:
+        testUnit.ignoreEmpty == output
+
+        where:
+        input           | output
+        null            | Boolean.TRUE
+        Boolean.TRUE    | Boolean.TRUE
+        Boolean.FALSE   | Boolean.FALSE
+    }
+
+    @Unroll
+    def "sets ignoreCase to #output when given #input"() {
+        setup:
+        def testUnit = new TestAbstractIgnorableRequestProperties()
+
+        when:
+        testUnit.ignoreCase = input
+
+        then:
+        testUnit.ignoreCase == output
+
+        where:
+        input           | output
+        null            | Boolean.FALSE
+        Boolean.TRUE    | Boolean.TRUE
+        Boolean.FALSE   | Boolean.FALSE
     }
 }

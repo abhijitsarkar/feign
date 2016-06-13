@@ -15,10 +15,11 @@
  *
  */
 
-package name.abhijitsarkar.feign.core.model
+package name.abhijitsarkar.feign.persistence
 
 import name.abhijitsarkar.feign.Request
 import spock.lang.Specification
+
 /**
  * @author Abhijit Sarkar
  */

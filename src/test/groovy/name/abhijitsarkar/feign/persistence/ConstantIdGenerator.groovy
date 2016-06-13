@@ -15,12 +15,20 @@
  *
  */
 
-package name.abhijitsarkar.feign;
+package name.abhijitsarkar.feign.persistence
 
+import groovy.util.logging.Slf4j
+import name.abhijitsarkar.feign.Request
 /**
  * @author Abhijit Sarkar
  */
-@SuppressWarnings({"PMD.ShortMethodName"})
-public interface IdGenerator {
-    String id(Request request);
+
+@Slf4j
+class ConstantIdGenerator implements IdGenerator {
+    @Override
+    String id(Request request) {
+        log.info("Generating request id: 1.")
+
+        return '1'
+    }
 }

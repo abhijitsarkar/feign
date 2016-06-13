@@ -18,8 +18,8 @@
 package name.abhijitsarkar.feign.persistence.service;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.RecordingRequest;
-import name.abhijitsarkar.feign.RecordingService;
+import name.abhijitsarkar.feign.persistence.RecordingRequest;
+import name.abhijitsarkar.feign.persistence.RecordingService;
 import name.abhijitsarkar.feign.persistence.repository.MongoDbRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.PayloadApplicationEvent;

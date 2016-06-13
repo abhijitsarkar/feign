@@ -15,8 +15,10 @@
  *
  */
 
-package name.abhijitsarkar.feign
+package name.abhijitsarkar.feign.persistence
 
+import name.abhijitsarkar.feign.Request
+import name.abhijitsarkar.feign.persistence.RecordingRequest
 import spock.lang.Specification
 
 /**

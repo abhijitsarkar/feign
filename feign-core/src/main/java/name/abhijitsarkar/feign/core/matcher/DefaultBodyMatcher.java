@@ -40,14 +40,8 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
         Body body = requestProperties.getBody();
         String requestBody = request.getBody();
 
-        Boolean globalIgnoreUnknown = feignMapping.isIgnoreUnknown();
-        Boolean globalIgnoreEmpty = feignMapping.isIgnoreEmpty();
-
-        Boolean localIgnoreUnknown = body.isIgnoreUnknown();
-        Boolean localIgnoreEmpty = body.isIgnoreEmpty();
-
-        Boolean ignoreUnknown = resolveIgnoredProperties(globalIgnoreUnknown, localIgnoreUnknown, Boolean.TRUE);
-        Boolean ignoreEmpty = resolveIgnoredProperties(globalIgnoreEmpty, localIgnoreEmpty, Boolean.TRUE);
+        Boolean ignoreUnknown = body.isIgnoreUnknown();
+        Boolean ignoreEmpty = body.isIgnoreEmpty();
 
         String content = nullToEmpty(body.getContent());
 
@@ -59,9 +53,7 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
             return false;
         }
 
-        Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
-        Boolean localIgnoreCase = body.isIgnoreCase();
-        Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
+        Boolean ignoreCase = body.isIgnoreCase();
         boolean match = ignoreCase ? requestBody.toLowerCase(Locale.ENGLISH).matches(content.toLowerCase(Locale.ENGLISH))
                 : requestBody.matches(content);
 
@@ -70,16 +62,4 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
 
         return match;
     }
-
-    @SuppressWarnings({"PMD.ConfusingTernary"})
-    private boolean resolveIgnoredProperties(Boolean global, Boolean local, Boolean defaultValue) {
-        if (local != null) {
-            return local;
-        } else if (global != null) {
-            return global;
-        }
-
-        return defaultValue;
-    }
-
 }

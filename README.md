@@ -17,11 +17,20 @@ that none of the other mock servers provide clean separation between the core fe
             spring:
                 profiles: p1
             feign:
-              matchers.disable: false
+              matchers:
+                disable: false
+              recording:
+                disable: false
+                idGenerator: name.abhijitsarkar.feign.persistence.DefaultIdGenerator
+              ignoreUnknown: true
+              ignoreEmpty: true
+              ignoreCase: false
               mappings:
                 -
                   request:
-                    idGenerator: name.abhijitsarkar.feign.core.model.DefaultIdGenerator
+                    recording:
+                      disable: false
+                      idGenerator: my.custom.IdGenerator
                     path:
                       uri: /feign/abc
                       ignoreCase: false
@@ -159,7 +168,7 @@ or create issues. Just do not expect me to complete your assignment for you.
 
    * Disable default matchers: Set the property `feign.matchers.disable: true` in the `application.yml`.
      This disables all default matchers that ship with Feign, but that does not mean you cannot pick and choose.
-     For example, to enable the `DefaultMethodMatcher`, put the following in a `@Configuration` class.
+     For example, to disable the `DefaultMethodMatcher`, put the following in a `@Configuration` class.
 
          @Bean
          DefaultMethodMatcher defaultMethodMatcher() {
@@ -178,11 +187,10 @@ or create issues. Just do not expect me to complete your assignment for you.
       For example, given the path `/feign/xyz`, the generated id is `feign-1357738284`.
       * If failed to extract the first segment of the URI, use `unknown`.
 
-     To replace the default id generator, create a bean that implements `IdGenerator`. The default one will be
-   automatically disabled.
+     To replace the default id generator, set `feign.recording.idGenerator` as shown in the above `application.yml`.
 
-     You can also specify id generators for individual requests as shown in the above `application.yml`. Request scoped
-   id generators trump the global one.
+     You can also specify id generators for individual requests as shown in the above `application.yml`.
+     If both global and request scoped id generators are present, the later wins.
 
    * Match even parts of the image have no corresponding properties in the Feign mapping: Set `ignoreUnknown`
    true for properties shown in the above `application.yml`.
@@ -192,10 +200,8 @@ or create issues. Just do not expect me to complete your assignment for you.
 
    * Match ignoring case: Set `ignoreCase` true for properties shown in the above `application.yml`.
 
-   * Disable recording: Set the property `feign.recording.disable: true` in the `application.yml`. Currently, there is
-   no support for disabling recording for certain requests, but you can use Spring profiles to somewhat achieve this.
-   You can also disable recording globally and then provide your own recording service with whatever
-   filtering logic you need.
+   * Disable recording: Set the property `feign.recording.disable: true` in the `application.yml` to disable recording
+   for all requests. You can also disable recording for individual requests as shown in the above `application.yml`.
 
    * Use a different data store for storing recorded requests: If you are using Spring Data, you need to implement
    a request repository and a recording service. Look in the `feign-persistence` module for a MongoDB version of these.

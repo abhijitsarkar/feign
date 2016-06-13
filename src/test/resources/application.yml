@@ -22,7 +22,21 @@ feign:
 ---
 
 spring:
-       profiles: p2
+      profiles: p2
+feign:
+  recording:
+    idGenerator: name.abhijitsarkar.feign.persistence.DefaultIdGenerator
+  mappings:
+    -
+      request:
+        path:
+          uri: /feign/abc
+    -
+      request:
+        recording:
+          idGenerator: name.abhijitsarkar.feign.persistence.ConstantIdGenerator
+        path:
+          uri: /feign/xyz
 
 ---
 
@@ -47,5 +61,8 @@ feign:
       request:
         path:
           uri: /feign/abc
+
+---
+
 
 

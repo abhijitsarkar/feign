@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 
 import static org.springframework.http.HttpMethod.GET
+import static org.springframework.http.HttpMethod.POST
 import static org.springframework.http.HttpStatus.OK
 
 /**
@@ -32,13 +33,13 @@ import static org.springframework.http.HttpStatus.OK
  */
 @ActiveProfiles('p1')
 class FeignSpecP1 extends AbstractFeignSpec {
-    def "matches request and finds it"() {
+    def "matches POST request and finds it"() {
         setup:
-        def uri = uriBuilder.path('feign/xyz').build().toUri()
+        def uri = uriBuilder.path('feign/abc').build().toUri()
 
         and:
         def ResponseEntity<String> response =
-                restTemplate.exchange(uri, GET, null, String)
+                restTemplate.exchange(uri, POST, null, String)
 
         when:
         assert response.statusCode == OK
@@ -58,7 +59,19 @@ class FeignSpecP1 extends AbstractFeignSpec {
         println(request)
 
         then:
-        request.path == '/feign/xyz'
-        request.method == 'GET'
+        request.path == '/feign/abc'
+        request.method == 'POST'
+    }
+
+    def "matches any GET request"() {
+        setup:
+        def uri = uriBuilder.path('feign/xyz').build().toUri()
+
+        when:
+        def ResponseEntity<String> response =
+                restTemplate.exchange(uri, GET, null, String)
+
+        then:
+        response.statusCode == OK
     }
 }

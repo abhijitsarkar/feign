@@ -44,11 +44,7 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
 
         Map<String, String> pairs = headers.getPairs();
 
-        Boolean globalIgnoreUnknown = feignMapping.isIgnoreUnknown();
-
-        Boolean localIgnoreUnknown = headers.isIgnoreUnknown();
-
-        Boolean ignoreUnknown = resolveIgnoredProperties(globalIgnoreUnknown, localIgnoreUnknown, Boolean.TRUE);
+        Boolean ignoreUnknown = headers.isIgnoreUnknown();
 
         if (!isEmpty(requestHeaders) && isEmpty(pairs) && !ignoreUnknown) {
             log.info("{} {}",
@@ -58,9 +54,7 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
             return false;
         }
 
-        Boolean globalIgnoreEmpty = feignMapping.isIgnoreEmpty();
-        Boolean localIgnoreEmpty = headers.isIgnoreEmpty();
-        Boolean ignoreEmpty = resolveIgnoredProperties(globalIgnoreEmpty, localIgnoreEmpty, Boolean.TRUE);
+        Boolean ignoreEmpty = headers.isIgnoreEmpty();
 
         if (isEmpty(requestHeaders)) {
             boolean match = ignoreEmpty || isEmpty(pairs);
@@ -79,9 +73,7 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
                             key, valueFromRequest, key, pairs.get(key));
 
                     String valueFromRequestProperty = nullToEmpty(pairs.get(key));
-                    Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
-                    Boolean localIgnoreCase = headers.isIgnoreCase();
-                    Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
+                    Boolean ignoreCase = headers.isIgnoreCase();
 
                     if (ignoreCase) {
                         valueFromRequest = isNullOrEmpty(valueFromRequest) ?
@@ -110,16 +102,4 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
 
         return match;
     }
-
-    @SuppressWarnings({"PMD.ConfusingTernary"})
-    private boolean resolveIgnoredProperties(Boolean global, Boolean local, Boolean defaultValue) {
-        if (local != null) {
-            return local;
-        } else if (global != null) {
-            return global;
-        }
-
-        return defaultValue;
-    }
-
 }

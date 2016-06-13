@@ -17,37 +17,40 @@
 
 package name.abhijitsarkar.feign.core.service
 
-import name.abhijitsarkar.feign.IdGenerator
 import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.core.matcher.DefaultBodyMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultHeadersMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultMethodMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultPathMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultQueriesMatcher
-import name.abhijitsarkar.feign.core.model.DefaultIdGenerator
 import name.abhijitsarkar.feign.core.model.FeignMapping
 import name.abhijitsarkar.feign.core.model.FeignProperties
+import name.abhijitsarkar.feign.core.model.RecordingProperties
 import name.abhijitsarkar.feign.core.model.RequestProperties
+import name.abhijitsarkar.feign.persistence.IdGenerator
 import org.springframework.context.ApplicationEventPublisher
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.util.function.BiFunction
-
 /**
  * @author Abhijit Sarkar
  */
 class FeignServiceSpec extends Specification {
     def matchers = [new DefaultPathMatcher(), new DefaultMethodMatcher(), new DefaultQueriesMatcher()
                     , new DefaultHeadersMatcher(), new DefaultBodyMatcher()]
+
+    def feignProperties
     def feignService
     def eventPublisher
     def feignMapping
 
     def setup() {
         feignService = new FeignService()
-        def feignProperties = new FeignProperties()
+        feignProperties = new FeignProperties()
         feignMapping = new FeignMapping()
         feignProperties.mappings = [feignMapping] as List
+        feignProperties.recording = new RecordingProperties()
 
         eventPublisher = Mock(ApplicationEventPublisher)
 
@@ -56,7 +59,7 @@ class FeignServiceSpec extends Specification {
         feignService.eventPublisher = eventPublisher
     }
 
-    def "finds mapping and recording request event using given id generator"() {
+    def "finds mapping and publishes request event using given id generator"() {
         setup:
         def request = Request.builder()
                 .path('/a')
@@ -64,7 +67,7 @@ class FeignServiceSpec extends Specification {
                 .build()
 
         def requestProperties = new RequestProperties()
-        requestProperties.idGenerator = TestIdGenerator
+        requestProperties.recording.idGenerator = TestIdGenerator
         feignMapping.request = requestProperties
 
         when:
@@ -74,31 +77,10 @@ class FeignServiceSpec extends Specification {
         mapping.present
         1 * eventPublisher.publishEvent({
             it.id == '1'
-            it instanceof Request
         })
     }
 
-    def "finds mapping and publishes recording event using global id generator"() {
-        setup:
-        def request = Request.builder()
-                .path('/a')
-                .method('GET')
-                .build()
-
-        feignService.idGenerator = new TestIdGenerator()
-
-        when:
-        def mapping = feignService.findFeignMapping(request)
-
-        then:
-        mapping.present
-        1 * eventPublisher.publishEvent({
-            it.id == '1'
-            it instanceof Request
-        })
-    }
-
-    def "finds mapping but does not publish recording event"() {
+    def "finds mapping and publishes request event using global id generator"() {
         setup:
         def request = Request.builder()
                 .path('/a')
@@ -110,20 +92,18 @@ class FeignServiceSpec extends Specification {
 
         then:
         mapping.present
-        0 * eventPublisher.publishEvent(_)
+        1 * eventPublisher.publishEvent({
+            it.id.startsWith('a-')
+        })
     }
 
-    def "does not find mapping but publishes recording request event using global generator"() {
+    def "does not find mapping but publishes request event using global generator"() {
         setup:
         def request = Request.builder()
                 .path('/a')
                 .method('GET')
                 .build()
 
-        def requestProperties = new RequestProperties()
-        requestProperties.idGenerator = TestIdGenerator
-        feignMapping.request = requestProperties
-        feignService.idGenerator = new DefaultIdGenerator()
         feignService.matchers = [new NoMatchMatcher()]
 
         when:
@@ -133,11 +113,39 @@ class FeignServiceSpec extends Specification {
         !mapping.present
         1 * eventPublisher.publishEvent({
             it.id.startsWith('a-')
-            it instanceof Request
         })
     }
 
-    def "does not find mapping and does not publish recording event"() {
+    @Unroll
+    def "finds mapping and publishes request event if disable is #disable"() {
+        setup:
+        def request = Request.builder()
+                .path('/a')
+                .method('GET')
+                .build()
+
+        def requestProperties = new RequestProperties()
+        requestProperties.recording.idGenerator = TestIdGenerator
+        requestProperties.recording.disable = disable
+        feignMapping.request = requestProperties
+
+        when:
+        def mapping = feignService.findFeignMapping(request)
+
+        then:
+        mapping.present
+        if (disable) {
+            0 * eventPublisher.publishEvent(_)
+        } else {
+            1 * eventPublisher.publishEvent(_)
+        }
+
+        where:
+        disable << [Boolean.FALSE, Boolean.TRUE]
+    }
+
+    @Unroll
+    def "does not find mapping and publishes request event if global disable is #disable"() {
         setup:
         def request = Request.builder()
                 .path('/a')
@@ -145,13 +153,21 @@ class FeignServiceSpec extends Specification {
                 .build()
 
         feignService.matchers = [new NoMatchMatcher()]
+        feignProperties.recording.disable = disable
 
         when:
         def mapping = feignService.findFeignMapping(request)
 
         then:
         !mapping.present
-        0 * eventPublisher.publishEvent(_)
+        if (disable) {
+            0 * eventPublisher.publishEvent(_)
+        } else {
+            1 * eventPublisher.publishEvent(_)
+        }
+
+        where:
+        disable << [Boolean.FALSE, Boolean.TRUE]
     }
 }
 

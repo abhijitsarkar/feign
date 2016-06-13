@@ -18,8 +18,6 @@
 package name.abhijitsarkar.feign.core.model;
 
 import lombok.Getter;
-import lombok.Setter;
-import name.abhijitsarkar.feign.IdGenerator;
 
 /**
  * @author Abhijit Sarkar
@@ -27,8 +25,7 @@ import name.abhijitsarkar.feign.IdGenerator;
 @Getter
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
 public class RequestProperties {
-    @Setter
-    private Class<? extends IdGenerator> idGenerator;
+    private RecordingProperties recording;
     private Path path;
     private Method method;
     private Queries queries;
@@ -41,6 +38,7 @@ public class RequestProperties {
         setQueries(null);
         setHeaders(null);
         setBody(null);
+        setRecording(null);
     }
 
     public void setPath(Path path) {
@@ -61,5 +59,9 @@ public class RequestProperties {
 
     public void setBody(Body body) {
         this.body = (body == null) ? new Body() : body;
+    }
+
+    public void setRecording(RecordingProperties recording) {
+        this.recording = (recording == null) ? new RecordingProperties() : recording;
     }
 }

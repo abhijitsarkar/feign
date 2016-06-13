@@ -15,24 +15,32 @@
  *
  */
 
-package name.abhijitsarkar.feign.core;
+package name.abhijitsarkar.feign.persistence;
 
-import name.abhijitsarkar.feign.core.web.RequestHandlerMethodArgumentResolver;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import java.util.List;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import name.abhijitsarkar.feign.Request;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Abhijit Sarkar
  */
-@Configuration
-@ComponentScan
-public class FeignCoreAutoConfiguration extends WebMvcConfigurerAdapter {
+@Slf4j
+@ToString
+@SuppressWarnings({"PMD.ShortMethodName"})
+public class DefaultIdGenerator implements IdGenerator {
     @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new RequestHandlerMethodArgumentResolver());
+    public String id(Request request) {
+        Pattern pattern = Pattern.compile("^(?:/?)([^/]+)(?:.*)$");
+        Matcher matcher = pattern.matcher(request.getPath());
+
+        String prefix = matcher.matches() ? matcher.group(1) : "unknown";
+
+        return String.format("%s-%s",
+                prefix,
+                request.getPath().hashCode());
     }
 }

@@ -17,7 +17,7 @@
 
 package name.abhijitsarkar.feign.persistence.service
 
-import name.abhijitsarkar.feign.RecordingRequest
+import name.abhijitsarkar.feign.persistence.RecordingRequest
 import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.persistence.repository.MongoDbRequestRepository
 import org.springframework.context.PayloadApplicationEvent

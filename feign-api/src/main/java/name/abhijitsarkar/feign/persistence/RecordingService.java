@@ -15,20 +15,10 @@
  *
  */
 
-package name.abhijitsarkar.feign
-
-import groovy.util.logging.Slf4j
+package name.abhijitsarkar.feign.persistence;
 
 /**
  * @author Abhijit Sarkar
  */
-
-@Slf4j
-class ConstantIdGenerator implements IdGenerator {
-    @Override
-    String id(Request request) {
-        log.info("Generating request id: 1.")
-
-        return '1'
-    }
+public interface RecordingService {
 }

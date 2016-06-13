@@ -18,8 +18,6 @@
 package name.abhijitsarkar.feign
 
 import com.jayway.jsonpath.JsonPath
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 
@@ -29,21 +27,35 @@ import static org.springframework.http.HttpMethod.GET
  */
 @ActiveProfiles('p2')
 class FeignSpecP2 extends AbstractFeignSpec {
-    def "records request using ConstantIdGenerator"() {
+    def "records request using global id generator"() {
+        given:
+        def uri = uriBuilder.path('feign/abc').build().toUri()
+
+        when:
+        def ResponseEntity<String> response =
+                restTemplate.exchange(uri, GET, null, String)
+
+        and:
+        response = restTemplate.exchange(new URI("http://localhost:$port/requests/feign-1357715445"),
+                GET, null, String)
+
+        println(response)
+
+        then:
+        JsonPath.read(response.body, '$.path') == '/feign/abc'
+    }
+
+    def "records request using given id generator"() {
         given:
         def uri = uriBuilder.path('feign/xyz').build().toUri()
 
         when:
-        HttpHeaders headers = new HttpHeaders()
-        headers.add('x-request-id', '101')
-
-        HttpEntity<Void> entity = new HttpEntity<Void>(null, headers)
-
         def ResponseEntity<String> response =
-                restTemplate.exchange(uri, GET, entity, String)
+                restTemplate.exchange(uri, GET, null, String)
 
         and:
-        response = restTemplate.exchange(new URI("http://localhost:$port/requests/1"), GET, null, String)
+        response = restTemplate.exchange(new URI("http://localhost:$port/requests/1"),
+                GET, null, String)
 
         println(response)
 

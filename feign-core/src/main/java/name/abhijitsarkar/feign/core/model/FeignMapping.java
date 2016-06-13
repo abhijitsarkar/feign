@@ -24,7 +24,7 @@ import lombok.Getter;
  */
 @Getter
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
-public class FeignMapping extends AbstractIgnorableRequestProperties {
+public class FeignMapping {
     private RequestProperties request;
     private ResponseProperties response;
 

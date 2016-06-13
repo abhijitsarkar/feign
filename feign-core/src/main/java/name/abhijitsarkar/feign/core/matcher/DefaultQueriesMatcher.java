@@ -52,11 +52,7 @@ public class DefaultQueriesMatcher implements BiFunction<Request, FeignMapping, 
 
         Map<String, List<String>> pairs = queries.getPairs();
 
-        Boolean globalIgnoreUnknown = feignMapping.isIgnoreUnknown();
-
-        Boolean localIgnoreUnknown = queries.isIgnoreUnknown();
-
-        Boolean ignoreUnknown = resolveIgnoredProperties(globalIgnoreUnknown, localIgnoreUnknown, Boolean.TRUE);
+        Boolean ignoreUnknown = queries.isIgnoreUnknown();
 
         if (!isEmpty(queryParams) && isEmpty(pairs) && !ignoreUnknown) {
             log.info("Query params are not empty but request property queries are, " +
@@ -65,9 +61,7 @@ public class DefaultQueriesMatcher implements BiFunction<Request, FeignMapping, 
             return false;
         }
 
-        Boolean globalIgnoreEmpty = feignMapping.isIgnoreEmpty();
-        Boolean localIgnoreEmpty = queries.isIgnoreEmpty();
-        Boolean ignoreEmpty = resolveIgnoredProperties(globalIgnoreEmpty, localIgnoreEmpty, Boolean.TRUE);
+        Boolean ignoreEmpty = queries.isIgnoreEmpty();
         if (isEmpty(queryParams)) {
             boolean match = ignoreEmpty || isEmpty(pairs);
 
@@ -91,9 +85,7 @@ public class DefaultQueriesMatcher implements BiFunction<Request, FeignMapping, 
                         log.info("Finding match for query param {}:[{}] in {}.",
                                 key, v1, valuesFromRequestProperties);
 
-                        Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
-                        Boolean localIgnoreCase = queries.isIgnoreCase();
-                        Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
+                        Boolean ignoreCase = queries.isIgnoreCase();
 
                         boolean m1 = (v1 == null && valuesFromRequestProperties.isEmpty());
                         boolean m2 = (v1 != null && !isContainsMatch(valuesFromRequestProperties, v1, ignoreCase) && ignoreUnknown);
@@ -118,17 +110,6 @@ public class DefaultQueriesMatcher implements BiFunction<Request, FeignMapping, 
         log.info("Queries match returned {}.", match);
 
         return match;
-    }
-
-    @SuppressWarnings({"PMD.ConfusingTernary"})
-    private boolean resolveIgnoredProperties(Boolean global, Boolean local, Boolean defaultValue) {
-        if (local != null) {
-            return local;
-        } else if (global != null) {
-            return global;
-        }
-
-        return defaultValue;
     }
 
     private boolean isContainsMatch(List<String> valuesFromRequestProperties, String valueFromRequest, boolean ignoreCase) {

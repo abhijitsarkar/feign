@@ -15,10 +15,23 @@
  *
  */
 
-package name.abhijitsarkar.feign;
+package name.abhijitsarkar.feign.matcher
+
+import groovy.util.logging.Slf4j
+import name.abhijitsarkar.feign.Request
+import name.abhijitsarkar.feign.core.model.FeignMapping
+
+import java.util.function.BiFunction
 
 /**
  * @author Abhijit Sarkar
  */
-public interface RecordingService {
+@Slf4j
+class AlwaysTrueMatcher implements BiFunction<Request, FeignMapping, Boolean> {
+    @Override
+    Boolean apply(Request request, FeignMapping feignMapping) {
+        log.info("Returning true without matching.")
+
+        return true
+    }
 }

@@ -18,6 +18,7 @@
 package name.abhijitsarkar.feign.core.model;
 
 import lombok.Getter;
+import name.abhijitsarkar.feign.persistence.DefaultIdGenerator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -33,15 +34,25 @@ import static java.util.Collections.emptyList;
 @ConfigurationProperties(prefix = "feign")
 @Getter
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
-public class FeignProperties {
+public class FeignProperties extends AbstractIgnorableRequestProperties {
+    private RecordingProperties recording;
     private List<FeignMapping> mappings;
 
     @PostConstruct
     void postConstruct() {
         setMappings(mappings);
+        setRecording(recording);
     }
 
     public void setMappings(List<FeignMapping> mappings) {
         this.mappings = (mappings == null) ? emptyList() : mappings;
+    }
+
+    public void setRecording(RecordingProperties recording) {
+        this.recording = (recording == null) ? new RecordingProperties() : recording;
+
+        if (this.recording.getIdGenerator() == null) {
+            this.recording.setIdGenerator(DefaultIdGenerator.class);
+        }
     }
 }
