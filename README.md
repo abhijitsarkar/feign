@@ -165,7 +165,6 @@ or create issues. Just do not expect me to complete your assignment for you.
          DefaultMethodMatcher defaultMethodMatcher() {
              return new DefaultMethodMatcher();
          }
-
         Same can be done for all the default matchers in the `feign-core` module.
 
    * Add custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
