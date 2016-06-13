@@ -101,7 +101,7 @@ that none of the other mock servers provide clean separation between the core fe
 
       Example of searching for all recorded requests:
 
-         curl -H "Accept: application/hal+json" -X GET "http://localhost:63440/requests/1"
+         curl -H "Accept: application/hal+json" -X GET "http://localhost:63440/requests"
 
       Response:
 
@@ -159,8 +159,6 @@ or create issues. Just do not expect me to complete your assignment for you.
 
    * Disable default matchers: Set the property `feign.matchers.disable: true` in the `application.yml`.
      This disables all default matchers that ship with Feign, but that does not mean you cannot pick and choose.
-     To provide a custom path matcher but to keep the others, disable all the matchers as stated above,
-     and then create beans for the ones you want to keep.
      For example, to enable the `DefaultMethodMatcher`, put the following in a `@Configuration` class.
 
          @Bean
@@ -170,7 +168,7 @@ or create issues. Just do not expect me to complete your assignment for you.
 
         Same can be done for all the default matchers in the `feign-core` module.
 
-   * Provide custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
+   * Add custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
    be added to the list of matchers.
 
    * Provide custom id generator: Feign ships with a default id generator that generates an id according to the
@@ -181,10 +179,10 @@ or create issues. Just do not expect me to complete your assignment for you.
       For example, given the path `/feign/xyz`, the generated id is `feign-1357738284`.
       * If failed to extract the first segment of the URI, use `unknown`.
 
-     To provide a custom id generator, create a bean that implements `IdGenerator`. The default one will be
+     To replace the default id generator, create a bean that implements `IdGenerator`. The default one will be
    automatically disabled.
 
-     You can also specify an id generator for a request as shown in the above `application.yml`. Request scoped
+     You can also specify id generators for individual requests as shown in the above `application.yml`. Request scoped
    id generators trump the global one.
 
    * Match even parts of the image have no corresponding properties in the Feign mapping: Set `ignoreUnknown`
@@ -200,7 +198,7 @@ or create issues. Just do not expect me to complete your assignment for you.
    You can also disable recording globally and then provide your own recording service with whatever
    filtering logic you need.
 
-   * Use a different data store for storing recorded requests: If you are using Spring Data,
+   * Use a different data store for storing recorded requests: If you are using Spring Data, you need to implement
    a request repository and a recording service. Look in the `feign-persistence` module for a MongoDB version of these.
 
       If you are not using Spring Data, you can hand roll your persistence logic. Trouble is, Spring Data REST
