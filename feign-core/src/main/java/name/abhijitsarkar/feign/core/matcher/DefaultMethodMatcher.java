@@ -22,6 +22,7 @@ import name.abhijitsarkar.feign.Request;
 import name.abhijitsarkar.feign.core.model.FeignMapping;
 import name.abhijitsarkar.feign.core.model.RequestProperties;
 
+import java.util.Locale;
 import java.util.function.BiFunction;
 
 /**
@@ -37,7 +38,7 @@ public class DefaultMethodMatcher implements BiFunction<Request, FeignMapping, B
         String method = requestProperties.getMethod().getName();
         boolean ignoreCase = requestProperties.getMethod().isIgnoreCase();
 
-        boolean match = ignoreCase ? requestMethod.toLowerCase().matches(method.toLowerCase()) :
+        boolean match = ignoreCase ? requestMethod.toLowerCase(Locale.ENGLISH).matches(method.toLowerCase(Locale.ENGLISH)) :
                 requestMethod.matches(method);
 
         log.info("Comparing request method: {} with: {}.", requestMethod, method);

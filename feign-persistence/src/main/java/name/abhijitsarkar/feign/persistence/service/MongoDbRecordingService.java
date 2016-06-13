@@ -31,6 +31,7 @@ import org.springframework.context.event.EventListener;
  * @author Abhijit Sarkar
  */
 @Slf4j
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize"})
 public class MongoDbRecordingService implements RecordingService {
     @Autowired
     MongoDbRequestRepository mongoDbRequestRepository;

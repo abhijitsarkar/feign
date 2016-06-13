@@ -17,13 +17,14 @@
 
 package name.abhijitsarkar.feign.core.model;
 
-import lombok.Data;
+import lombok.Setter;
 
 /**
  * @author Abhijit Sarkar
  */
-@Data
-public abstract class IgnorableRequestProperties {
+@Setter
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.AbstractClassWithoutAbstractMethod"})
+public abstract class AbstractIgnorableRequestProperties {
     private Boolean ignoreUnknown;
     private Boolean ignoreEmpty;
     private Boolean ignoreCase;

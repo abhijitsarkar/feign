@@ -40,6 +40,7 @@ import static org.springframework.util.StringUtils.isEmpty;
  * @author Abhijit Sarkar
  */
 @RestController
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize"})
 public class FeignController {
     @Autowired
     FeignService feignService;

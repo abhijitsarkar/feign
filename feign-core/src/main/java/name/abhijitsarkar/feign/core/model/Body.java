@@ -38,20 +38,16 @@ import static org.springframework.util.StringUtils.isEmpty;
  */
 @Getter
 @Setter
-public class Body extends IgnorableRequestProperties {
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
+public class Body extends AbstractIgnorableRequestProperties {
     private String raw;
     private String url;
     private String classpath;
 
-    public Body() {
-        long count = Stream.of(raw, url, classpath)
-                .filter(Objects::nonNull)
-                .count();
-
-        checkState(count != 1, "Ambiguous request body declaration.");
-    }
-
+    @SuppressWarnings({"PMD.ConfusingTernary", "PMD.PreserveStackTrace"})
     public String getContent() {
+        validate();
+
         if (!isEmpty(raw)) {
             return raw;
         } else if (!isEmpty(url) || !isEmpty(classpath)) {
@@ -72,5 +68,13 @@ public class Body extends IgnorableRequestProperties {
         }
 
         return "";
+    }
+
+    private void validate() {
+        long count = Stream.of(raw, url, classpath)
+                .filter(Objects::nonNull)
+                .count();
+
+        checkState(count <= 1, "Ambiguous request body declaration.");
     }
 }

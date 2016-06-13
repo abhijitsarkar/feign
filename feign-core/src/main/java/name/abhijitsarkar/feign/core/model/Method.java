@@ -17,6 +17,7 @@
 
 package name.abhijitsarkar.feign.core.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import static java.lang.Boolean.FALSE;
@@ -24,16 +25,19 @@ import static java.lang.Boolean.FALSE;
 /**
  * @author Abhijit Sarkar
  */
+@Getter
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
 public class Method {
     public static final String WILDCARD = ".*";
 
-    @Getter
     private String name;
+
+    @Getter(AccessLevel.NONE)
     private Boolean ignoreCase;
 
     public Method() {
-        setName(name);
-        setIgnoreCase(ignoreCase);
+        setName(null);
+        setIgnoreCase(null);
     }
 
     public boolean isIgnoreCase() {

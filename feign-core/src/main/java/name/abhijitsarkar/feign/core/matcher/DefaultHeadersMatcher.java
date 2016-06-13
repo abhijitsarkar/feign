@@ -23,6 +23,7 @@ import name.abhijitsarkar.feign.core.model.FeignMapping;
 import name.abhijitsarkar.feign.core.model.Headers;
 import name.abhijitsarkar.feign.core.model.RequestProperties;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -44,23 +45,22 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
         Map<String, String> pairs = headers.getPairs();
 
         Boolean globalIgnoreUnknown = feignMapping.isIgnoreUnknown();
-        Boolean globalIgnoreEmpty = feignMapping.isIgnoreEmpty();
-        Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
 
         Boolean localIgnoreUnknown = headers.isIgnoreUnknown();
-        Boolean localIgnoreEmpty = headers.isIgnoreEmpty();
-        Boolean localIgnoreCase = headers.isIgnoreCase();
 
         Boolean ignoreUnknown = resolveIgnoredProperties(globalIgnoreUnknown, localIgnoreUnknown, Boolean.TRUE);
-        Boolean ignoreEmpty = resolveIgnoredProperties(globalIgnoreEmpty, localIgnoreEmpty, Boolean.TRUE);
-        Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
 
         if (!isEmpty(requestHeaders) && isEmpty(pairs) && !ignoreUnknown) {
-            log.info("Request headers are not empty but request property headers are, " +
+            log.info("{} {}",
+                    "Request headers are not empty but request property headers are,",
                     "and ignoreUnknown is false. Headers match returned false.");
 
             return false;
         }
+
+        Boolean globalIgnoreEmpty = feignMapping.isIgnoreEmpty();
+        Boolean localIgnoreEmpty = headers.isIgnoreEmpty();
+        Boolean ignoreEmpty = resolveIgnoredProperties(globalIgnoreEmpty, localIgnoreEmpty, Boolean.TRUE);
 
         if (isEmpty(requestHeaders)) {
             boolean match = ignoreEmpty || isEmpty(pairs);
@@ -79,16 +79,19 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
                             key, valueFromRequest, key, pairs.get(key));
 
                     String valueFromRequestProperty = nullToEmpty(pairs.get(key));
+                    Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
+                    Boolean localIgnoreCase = headers.isIgnoreCase();
+                    Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
 
                     if (ignoreCase) {
                         valueFromRequest = isNullOrEmpty(valueFromRequest) ?
-                                valueFromRequest : valueFromRequest.toLowerCase();
-                        valueFromRequestProperty = valueFromRequestProperty.toLowerCase();
+                                valueFromRequest : valueFromRequest.toLowerCase(Locale.ENGLISH);
+                        valueFromRequestProperty = valueFromRequestProperty.toLowerCase(Locale.ENGLISH);
                     }
 
-                    boolean m1 = (valueFromRequest == null && valueFromRequestProperty.isEmpty());
-                    boolean m2 = (valueFromRequest != null && valueFromRequestProperty.isEmpty() && ignoreUnknown);
-                    boolean m3 = (valueFromRequest != null && valueFromRequest.matches(valueFromRequestProperty));
+                    boolean m1 = valueFromRequest == null && valueFromRequestProperty.isEmpty();
+                    boolean m2 = valueFromRequest != null && valueFromRequestProperty.isEmpty() && ignoreUnknown;
+                    boolean m3 = valueFromRequest != null && valueFromRequest.matches(valueFromRequestProperty);
 
                     if (m1) {
                         log.info("Request header value is null and headers are empty.");
@@ -108,6 +111,7 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
         return match;
     }
 
+    @SuppressWarnings({"PMD.ConfusingTernary"})
     private boolean resolveIgnoredProperties(Boolean global, Boolean local, Boolean defaultValue) {
         if (local != null) {
             return local;

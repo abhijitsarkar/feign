@@ -34,6 +34,7 @@ import java.util.function.BiFunction;
  */
 @Service
 @Slf4j
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize"})
 public class FeignService {
     @Autowired
     FeignProperties feignProperties;

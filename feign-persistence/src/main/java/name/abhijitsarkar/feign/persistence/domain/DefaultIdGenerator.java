@@ -18,6 +18,7 @@
 package name.abhijitsarkar.feign.persistence.domain;
 
 
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import name.abhijitsarkar.feign.IdGenerator;
 import name.abhijitsarkar.feign.Request;
@@ -32,6 +33,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  * @author Abhijit Sarkar
  */
 @Slf4j
+@ToString
+@SuppressWarnings({"PMD.ShortMethodName"})
 public class DefaultIdGenerator implements IdGenerator {
     @Override
     public String id(Request request) {

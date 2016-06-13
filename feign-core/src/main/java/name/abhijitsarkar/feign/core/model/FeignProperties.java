@@ -32,6 +32,7 @@ import static java.util.Collections.emptyList;
 @Component
 @ConfigurationProperties(prefix = "feign")
 @Getter
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
 public class FeignProperties {
     private List<FeignMapping> mappings;
 

@@ -23,6 +23,7 @@ import name.abhijitsarkar.feign.core.model.Body;
 import name.abhijitsarkar.feign.core.model.FeignMapping;
 import name.abhijitsarkar.feign.core.model.RequestProperties;
 
+import java.util.Locale;
 import java.util.function.BiFunction;
 
 import static com.google.common.base.Strings.nullToEmpty;
@@ -41,15 +42,12 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
 
         Boolean globalIgnoreUnknown = feignMapping.isIgnoreUnknown();
         Boolean globalIgnoreEmpty = feignMapping.isIgnoreEmpty();
-        Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
 
         Boolean localIgnoreUnknown = body.isIgnoreUnknown();
         Boolean localIgnoreEmpty = body.isIgnoreEmpty();
-        Boolean localIgnoreCase = body.isIgnoreCase();
 
         Boolean ignoreUnknown = resolveIgnoredProperties(globalIgnoreUnknown, localIgnoreUnknown, Boolean.TRUE);
         Boolean ignoreEmpty = resolveIgnoredProperties(globalIgnoreEmpty, localIgnoreEmpty, Boolean.TRUE);
-        Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
 
         String content = nullToEmpty(body.getContent());
 
@@ -61,7 +59,10 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
             return false;
         }
 
-        boolean match = ignoreCase ? requestBody.toLowerCase().matches(content.toLowerCase())
+        Boolean globalIgnoreCase = feignMapping.isIgnoreCase();
+        Boolean localIgnoreCase = body.isIgnoreCase();
+        Boolean ignoreCase = resolveIgnoredProperties(globalIgnoreCase, localIgnoreCase, Boolean.FALSE);
+        boolean match = ignoreCase ? requestBody.toLowerCase(Locale.ENGLISH).matches(content.toLowerCase(Locale.ENGLISH))
                 : requestBody.matches(content);
 
         log.info("Comparing request body: {} with: {}.", requestBody, content);
@@ -70,6 +71,7 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
         return match;
     }
 
+    @SuppressWarnings({"PMD.ConfusingTernary"})
     private boolean resolveIgnoredProperties(Boolean global, Boolean local, Boolean defaultValue) {
         if (local != null) {
             return local;

@@ -23,6 +23,7 @@ import lombok.Getter;
  * @author Abhijit Sarkar
  */
 @Getter
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
 public class RequestProperties {
     private Path path;
     private Method method;
@@ -31,11 +32,11 @@ public class RequestProperties {
     private Body body;
 
     public RequestProperties() {
-        setPath(path);
-        setMethod(method);
-        setQueries(queries);
-        setHeaders(headers);
-        setBody(body);
+        setPath(null);
+        setMethod(null);
+        setQueries(null);
+        setHeaders(null);
+        setBody(null);
     }
 
     public void setPath(Path path) {

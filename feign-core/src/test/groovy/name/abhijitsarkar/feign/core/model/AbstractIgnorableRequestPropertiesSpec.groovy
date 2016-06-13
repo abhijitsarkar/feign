@@ -24,14 +24,14 @@ import spock.lang.Unroll
 /**
  * @author Abhijit Sarkar
  */
-class IgnorableRequestPropertiesSpec extends Specification {
-    private static final class TestIgnorableRequestProperties extends IgnorableRequestProperties {
+class AbstractIgnorableRequestPropertiesSpec extends Specification {
+    private static final class TestAbstractIgnorableRequestProperties extends AbstractIgnorableRequestProperties {
     }
 
     @Unroll
     def "sets #ignoreProperty"() {
         setup:
-        def testUnit = new TestIgnorableRequestProperties()
+        def testUnit = new TestAbstractIgnorableRequestProperties()
         def values = [null, Boolean.TRUE, Boolean.FALSE]
 
         expect:

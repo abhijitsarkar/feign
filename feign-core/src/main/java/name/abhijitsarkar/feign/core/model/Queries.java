@@ -27,12 +27,14 @@ import static java.util.Collections.emptyMap;
 /**
  * @author Abhijit Sarkar
  */
-public class Queries extends IgnorableRequestProperties {
-    @Getter
+@Getter
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
+public class Queries extends AbstractIgnorableRequestProperties {
     private Map<String, List<String>> pairs;
 
     public Queries() {
-        setPairs(pairs);
+        super();
+        setPairs(null);
     }
 
     public void setPairs(Map<String, List<String>> pairs) {

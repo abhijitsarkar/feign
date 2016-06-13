@@ -29,11 +29,13 @@ import org.springframework.data.annotation.Id;
 @Getter
 @NoArgsConstructor
 @ToString
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.ImmutableField", "PMD.SingularField"})
 public class MongoDbRecordingRequest extends Request {
     @Id
     private String id;
 
     public MongoDbRecordingRequest(Request request, String id) {
+        super();
         path = request.getPath();
         method = request.getMethod();
         queryParams = request.getQueryParams();

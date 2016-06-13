@@ -23,6 +23,7 @@ import name.abhijitsarkar.feign.core.model.FeignMapping;
 import name.abhijitsarkar.feign.core.model.RequestProperties;
 import org.springframework.util.AntPathMatcher;
 
+import java.util.Locale;
 import java.util.function.BiFunction;
 
 /**
@@ -30,7 +31,7 @@ import java.util.function.BiFunction;
  */
 @Slf4j
 public class DefaultPathMatcher implements BiFunction<Request, FeignMapping, Boolean> {
-    private final org.springframework.util.PathMatcher pathMatcher = new AntPathMatcher();
+    private final transient org.springframework.util.PathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     public Boolean apply(Request request, FeignMapping feignMapping) {
@@ -40,7 +41,8 @@ public class DefaultPathMatcher implements BiFunction<Request, FeignMapping, Boo
         String path = requestProperties.getPath().getUri();
         boolean ignoreCase = requestProperties.getPath().isIgnoreCase();
 
-        boolean match = ignoreCase ? pathMatcher.match(path.toLowerCase(), requestPath.toLowerCase()) :
+        boolean match = ignoreCase ? pathMatcher.match(path.toLowerCase(Locale.ENGLISH),
+                requestPath.toLowerCase(Locale.ENGLISH)) :
                 pathMatcher.match(path, requestPath);
 
         log.info("Comparing request path: {} with uri: {}.", requestPath, path);
