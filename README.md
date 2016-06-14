@@ -8,7 +8,8 @@ that none of the other mock servers provide clean separation between the core fe
    * [Spring HATEOAS](http://projects.spring.io/spring-hateoas)
    * [Spring Data Rest](http://projects.spring.io/spring-data-rest)
    * [Spring Data MongoDB](http://projects.spring.io/spring-data-mongodb) (optional)
-   * Embedded MongoDB (optional)
+   * [Embedded MongoDB](https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo) (optional)
+   * [Spock Test Framework](http://spockframework.github.io/spock/docs/1.0/index.html)
 
 ## Core Features
    * **Declarative request/response mapping via YAML**. Following is a sample complete with all properties.
@@ -161,9 +162,6 @@ that none of the other mock servers provide clean separation between the core fe
    and call it good. Moving to Spring Cloud? Me too!
    Create a Spring Cloud application, register with discovery and then order a Martini, shaken, not stirred.
 
-This is work in progress, so expect to see changes. You are welcome to send pull requests, ask questions,
-or create issues. Just do not expect me to complete your assignment for you.
-
 ## Customizations
 
    * Disable default matchers: Set the property `feign.matchers.disable: true` in the `application.yml`.
@@ -179,7 +177,7 @@ or create issues. Just do not expect me to complete your assignment for you.
    * Add custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
    be added to the list of matchers. For a mapping to be found, all matchers must match the request.
 
-   * Provide custom id generator: Feign ships with a default id generator that generates an id according to the
+   * Provide custom id generator: Feign ships with a default `IdGenerator` that generates an id according to the
    following logic:
 
       Calculate the URI hash and append a `{prefix}-` to it. The prefix is generated as follows:
@@ -204,14 +202,21 @@ or create issues. Just do not expect me to complete your assignment for you.
    for all requests. You can also disable recording for individual requests as shown in the above `application.yml`.
 
    * Use a different data store for storing recorded requests: If you are using Spring Data, you need to implement
-   a request repository and a recording service. Look in the `feign-persistence` module for a MongoDB version of these.
+   a [Repository](http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/Repository.html) and a
+   `RecordingService`. Look in the `feign-persistence` module for a MongoDB version of those.
 
       If you are not using Spring Data, you can hand roll your persistence logic. Trouble is, Spring Data REST
    depends on Spring Data and thus, without it, you will have to write all the code for the REST endpoints to manage your
    request data store. Seriously, unless you are paid by hour, do not do it.
 
-> I don't know who you're but before you steal my code and use it for a raise at work, you may want to look
-into the licensing terms solely meant to keep jerks away.
+## Contribute
+
+Feign is a volunteer effort. You are welcome to send pull requests, ask questions, or create issues.
+If you use it and you like it, you can help by spreading the word!
+
+## License
+
+Copyright 2015-2016 Abhijit Sarkar - Released under the GPLv3 license.
 
 
 
