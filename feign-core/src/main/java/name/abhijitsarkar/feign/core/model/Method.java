@@ -17,7 +17,6 @@
 
 package name.abhijitsarkar.feign.core.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import static java.lang.Boolean.FALSE;
@@ -32,7 +31,6 @@ public class Method {
 
     private String name;
 
-    @Getter(AccessLevel.NONE)
     private Boolean ignoreCase;
 
     public Method() {
@@ -40,7 +38,7 @@ public class Method {
         setIgnoreCase(null);
     }
 
-    public boolean isIgnoreCase() {
+    public Boolean isIgnoreCase() {
         return ignoreCase;
     }
 

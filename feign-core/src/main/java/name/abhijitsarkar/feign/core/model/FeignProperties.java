@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
 
 /**
@@ -39,9 +41,12 @@ public class FeignProperties extends AbstractIgnorableRequestProperties {
     private List<FeignMapping> mappings;
 
     @PostConstruct
-    void postConstruct() {
+    public void postConstruct() {
         setMappings(mappings);
         setRecording(recording);
+        setIgnoreCase(null);
+        setIgnoreUnknown(null);
+        setIgnoreEmpty(null);
     }
 
     public void setMappings(List<FeignMapping> mappings) {
@@ -54,5 +59,17 @@ public class FeignProperties extends AbstractIgnorableRequestProperties {
         if (this.recording.getIdGenerator() == null) {
             this.recording.setIdGenerator(DefaultIdGenerator.class);
         }
+    }
+
+    public void setIgnoreCase(Boolean ignoreCase) {
+        super.setIgnoreCase((ignoreCase == null) ? FALSE : ignoreCase);
+    }
+
+    public void setIgnoreUnknown(Boolean ignoreUnknown) {
+        super.setIgnoreUnknown((ignoreUnknown == null) ? TRUE : ignoreUnknown);
+    }
+
+    public void setIgnoreEmpty(Boolean ignoreEmpty) {
+        super.setIgnoreEmpty((ignoreEmpty == null) ? TRUE : ignoreEmpty);
     }
 }

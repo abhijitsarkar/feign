@@ -52,7 +52,7 @@ public class FeignService {
     @Autowired
     Collection<BiFunction<Request, FeignMapping, Boolean>> matchers;
 
-    final IgnorablePropertiesMerger propertiesMerger = new IgnorablePropertiesMerger();
+    private final IgnorablePropertiesMerger propertiesMerger = new IgnorablePropertiesMerger();
 
     public Optional<FeignMapping> findFeignMapping(Request request) {
         Optional<FeignMapping> feignMapping = feignProperties.getMappings().stream()

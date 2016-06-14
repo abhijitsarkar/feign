@@ -17,7 +17,6 @@
 
 package name.abhijitsarkar.feign.core.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import name.abhijitsarkar.feign.persistence.IdGenerator;
@@ -30,7 +29,6 @@ import static java.lang.Boolean.FALSE;
 @Getter
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
 public class RecordingProperties {
-    @Getter(AccessLevel.NONE)
     private Boolean disable;
 
     @Setter

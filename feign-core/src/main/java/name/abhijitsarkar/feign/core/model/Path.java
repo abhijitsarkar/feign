@@ -17,7 +17,6 @@
 
 package name.abhijitsarkar.feign.core.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import static java.lang.Boolean.FALSE;
@@ -33,7 +32,6 @@ public class Path {
 
     private String uri;
 
-    @Getter(AccessLevel.NONE)
     private Boolean ignoreCase;
 
     public Path() {
@@ -41,7 +39,7 @@ public class Path {
         setIgnoreCase(null);
     }
 
-    public boolean isIgnoreCase() {
+    public Boolean isIgnoreCase() {
         return ignoreCase;
     }
 

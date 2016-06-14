@@ -29,6 +29,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.springframework.util.ReflectionUtils.invokeMethod;
@@ -49,42 +50,43 @@ public class IgnorablePropertiesMerger {
                 requestProperties.getQueries(),
                 requestProperties.getHeaders(),
                 requestProperties.getBody())
+                .filter(Objects::nonNull)
                 .forEach(requestProperty -> {
                     Class<?> clazz = requestProperty.getClass();
                     log.debug("Introspecting class: {}.", clazz.getName());
 
                     Arrays.stream(getPropertyDescriptors(clazz))
-                            .forEach(local -> {
-                                String localName = local.getName();
+                            .forEach(property -> {
+                                String name = property.getName();
 
                                 globalIgnoreProperties.stream()
-                                        .filter(global -> !"class".equals(localName)
-                                                && global.getName().equals(localName))
+                                        .filter(globalProperty -> !"class".equals(name)
+                                                && globalProperty.getName().equals(name))
                                         .findFirst()
-                                        .ifPresent(global -> {
-                                            log.debug("Merging property: {}.", localName);
+                                        .ifPresent(globalProperty -> {
+                                            log.debug("Merging property: {}.", name);
 
-                                            Method localGetter = local.getReadMethod();
-                                            Method globalGetter = global.getReadMethod();
+                                            Method getter = property.getReadMethod();
+                                            Method superGetter = globalProperty.getReadMethod();
 
-                                            Object localIgnore = null;
+                                            Object ignore = null;
 
-                                            if (localGetter != null) {
-                                                localIgnore = invokeMethod(localGetter, requestProperty);
-                                            } else if (globalGetter != null) {
-                                                localIgnore = invokeMethod(globalGetter, requestProperty);
+                                            if (getter != null) {
+                                                ignore = invokeMethod(getter, requestProperty);
+                                            } else if (superGetter != null) {
+                                                ignore = invokeMethod(superGetter, requestProperty);
                                             }
 
-                                            if (localIgnore == null) {
-                                                Object globalIgnore = (globalGetter != null) ?
-                                                        invokeMethod(globalGetter, feignProperties) : null;
-                                                Method localSetter = local.getWriteMethod();
-                                                Method globalSetter = global.getWriteMethod();
+                                            if (ignore == null) {
+                                                Object globalIgnore = (superGetter != null) ?
+                                                        invokeMethod(superGetter, feignProperties) : null;
+                                                Method setter = property.getWriteMethod();
+                                                Method superSetter = globalProperty.getWriteMethod();
 
-                                                if (localSetter != null) {
-                                                    invokeMethod(localSetter, requestProperty, globalIgnore);
-                                                } else if (globalSetter != null) {
-                                                    invokeMethod(globalSetter, requestProperty, globalIgnore);
+                                                if (setter != null) {
+                                                    invokeMethod(setter, requestProperty, globalIgnore);
+                                                } else if (superSetter != null) {
+                                                    invokeMethod(superSetter, requestProperty, globalIgnore);
                                                 }
                                             }
                                         });

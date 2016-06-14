@@ -19,8 +19,10 @@ package name.abhijitsarkar.feign.core.matcher
 
 import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.core.model.FeignMapping
+import name.abhijitsarkar.feign.core.model.FeignProperties
 import name.abhijitsarkar.feign.core.model.Queries
 import name.abhijitsarkar.feign.core.model.RequestProperties
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -28,14 +30,33 @@ import spock.lang.Unroll
  * @author Abhijit Sarkar
  */
 class DefaultQueriesMatcherSpec extends Specification {
-    def queriesMatcher = new DefaultQueriesMatcher()
+    @Shared
+    def queriesMatcher
+    @Shared
+    def feignProperties
+
+    def queries
     def feignMapping
     def requestProperties
+
+    def setupSpec() {
+        queriesMatcher = new DefaultQueriesMatcher()
+
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
+    }
 
     def setup() {
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties
+
+        queries = new Queries()
+        queries.ignoreCase = feignProperties.ignoreCase
+        queries.ignoreUnknown = feignProperties.ignoreUnknown
+        queries.ignoreEmpty = feignProperties.ignoreEmpty
+
+        requestProperties.queries = queries
     }
 
     def "matches when no request params and no properties params"() {
@@ -49,9 +70,7 @@ class DefaultQueriesMatcherSpec extends Specification {
     @Unroll
     def "match found is #ignoreUnknown when unknown request params and ignoreUnknown is #ignoreUnknown"() {
         setup:
-        def queries = new Queries()
         queries.ignoreUnknown = ignoreUnknown
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['a': ['x', 'y'] as String[]])
@@ -67,10 +86,8 @@ class DefaultQueriesMatcherSpec extends Specification {
     @Unroll
     def "match found is #ignoreEmpty when no request params, some property params, and ignoreEmpty is #ignoreEmpty"() {
         setup:
-        def queries = new Queries()
         queries.ignoreEmpty = ignoreEmpty
         queries.pairs = ['a': ['x', 'y'] as List]
-        requestProperties.queries = queries
 
         def request = Request.builder().build()
 
@@ -84,9 +101,7 @@ class DefaultQueriesMatcherSpec extends Specification {
     @Unroll
     def "matches when a request param and the corresponding property param both have #values values"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': [values] as List]
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['a': [values] as String[]])
@@ -101,9 +116,7 @@ class DefaultQueriesMatcherSpec extends Specification {
 
     def "matches when a request param and the corresponding property param both have a null and the same non null values"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': ['b', null] as List]
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['a': ['b', null] as String[]])
@@ -115,9 +128,7 @@ class DefaultQueriesMatcherSpec extends Specification {
 
     def "matches when a request param value is null and the corresponding property param has empty values"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': [] as List]
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['a': [null] as String[]])
@@ -129,9 +140,7 @@ class DefaultQueriesMatcherSpec extends Specification {
 
     def "matches even when the values are unsorted"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': ['b', 'c'] as List]
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['a': ['c', 'b'] as String[]])
@@ -144,11 +153,9 @@ class DefaultQueriesMatcherSpec extends Specification {
     @Unroll
     def "match found is #ignoreCase if ignoreCase is #ignoreCase"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': ['b', 'c'] as List]
         queries.ignoreUnknown = false
         queries.ignoreCase = ignoreCase
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['a': ['B', 'C'] as String[]])
@@ -163,11 +170,9 @@ class DefaultQueriesMatcherSpec extends Specification {
 
     def "case insensitive match only applies to values, not param names"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': ['b', 'c'] as List]
         queries.ignoreCase = true
         queries.ignoreUnknown = false
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['A': ['B', 'C'] as String[]])
@@ -179,9 +184,7 @@ class DefaultQueriesMatcherSpec extends Specification {
 
     def "matches regex param values"() {
         setup:
-        def queries = new Queries()
         queries.pairs = ['a': ['b.*'] as List]
-        requestProperties.queries = queries
 
         def request = Request.builder()
                 .queryParams(['A': ['bcd'] as String[]])

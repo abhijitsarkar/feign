@@ -25,14 +25,15 @@ import name.abhijitsarkar.feign.core.matcher.DefaultPathMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultQueriesMatcher
 import name.abhijitsarkar.feign.core.model.FeignMapping
 import name.abhijitsarkar.feign.core.model.FeignProperties
-import name.abhijitsarkar.feign.core.model.RecordingProperties
 import name.abhijitsarkar.feign.core.model.RequestProperties
 import name.abhijitsarkar.feign.persistence.IdGenerator
 import org.springframework.context.ApplicationEventPublisher
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.function.BiFunction
+
 /**
  * @author Abhijit Sarkar
  */
@@ -40,20 +41,32 @@ class FeignServiceSpec extends Specification {
     def matchers = [new DefaultPathMatcher(), new DefaultMethodMatcher(), new DefaultQueriesMatcher()
                     , new DefaultHeadersMatcher(), new DefaultBodyMatcher()]
 
+    @Shared
     def feignProperties
+    @Shared
+    def request
+
     def feignService
     def eventPublisher
     def feignMapping
 
-    def setup() {
-        feignService = new FeignService()
+    def setupSpec() {
         feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
+
+        request = Request.builder()
+                .path('/a')
+                .method('GET')
+                .build()
+    }
+
+    def setup() {
         feignMapping = new FeignMapping()
         feignProperties.mappings = [feignMapping] as List
-        feignProperties.recording = new RecordingProperties()
 
         eventPublisher = Mock(ApplicationEventPublisher)
 
+        feignService = new FeignService()
         feignService.feignProperties = feignProperties
         feignService.matchers = matchers
         feignService.eventPublisher = eventPublisher
@@ -61,11 +74,6 @@ class FeignServiceSpec extends Specification {
 
     def "finds mapping and publishes request event using given id generator"() {
         setup:
-        def request = Request.builder()
-                .path('/a')
-                .method('GET')
-                .build()
-
         def requestProperties = new RequestProperties()
         requestProperties.recording.idGenerator = TestIdGenerator
         feignMapping.request = requestProperties
@@ -81,12 +89,6 @@ class FeignServiceSpec extends Specification {
     }
 
     def "finds mapping and publishes request event using global id generator"() {
-        setup:
-        def request = Request.builder()
-                .path('/a')
-                .method('GET')
-                .build()
-
         when:
         def mapping = feignService.findFeignMapping(request)
 
@@ -99,11 +101,6 @@ class FeignServiceSpec extends Specification {
 
     def "does not find mapping but publishes request event using global generator"() {
         setup:
-        def request = Request.builder()
-                .path('/a')
-                .method('GET')
-                .build()
-
         feignService.matchers = [new NoMatchMatcher()]
 
         when:
@@ -119,11 +116,6 @@ class FeignServiceSpec extends Specification {
     @Unroll
     def "finds mapping and publishes request event if disable is #disable"() {
         setup:
-        def request = Request.builder()
-                .path('/a')
-                .method('GET')
-                .build()
-
         def requestProperties = new RequestProperties()
         requestProperties.recording.idGenerator = TestIdGenerator
         requestProperties.recording.disable = disable
@@ -147,11 +139,6 @@ class FeignServiceSpec extends Specification {
     @Unroll
     def "does not find mapping and publishes request event if global disable is #disable"() {
         setup:
-        def request = Request.builder()
-                .path('/a')
-                .method('GET')
-                .build()
-
         feignService.matchers = [new NoMatchMatcher()]
         feignProperties.recording.disable = disable
 

@@ -19,29 +19,48 @@ package name.abhijitsarkar.feign.core.matcher
 
 import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.core.model.FeignMapping
+import name.abhijitsarkar.feign.core.model.FeignProperties
 import name.abhijitsarkar.feign.core.model.Method
 import name.abhijitsarkar.feign.core.model.RequestProperties
+import spock.lang.Shared
 import spock.lang.Specification
 
 /**
  * @author Abhijit Sarkar
  */
 class DefaultMethodMatcherSpec extends Specification {
-    def methodMatcher = new DefaultMethodMatcher()
+    @Shared
+    def methodMatcher
+    @Shared
+    def feignProperties
+
+    def method
     def feignMapping
     def requestProperties
 
+    def setupSpec() {
+        methodMatcher = new DefaultMethodMatcher()
+
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
+    }
+
     def setup() {
+        method = new Method()
+
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties
+
+        method = new Method()
+        method.ignoreCase = feignProperties.ignoreCase
+
+        requestProperties.method = method
     }
 
     def "matches exact method"() {
         setup:
-        def method = new Method()
         method.name = 'GET'
-        requestProperties.method = method
         def request = Request.builder().method('GET').build()
 
         expect:
@@ -50,9 +69,7 @@ class DefaultMethodMatcherSpec extends Specification {
 
     def "matches regex method"() {
         setup:
-        def method = new Method()
         method.name = '.*'
-        requestProperties.method = method
         def request = Request.builder().method('GET').build()
 
         expect:
@@ -61,10 +78,8 @@ class DefaultMethodMatcherSpec extends Specification {
 
     def "matches ignore case"() {
         setup:
-        def method = new Method()
         method.name = 'get'
         method.ignoreCase = true
-        requestProperties.method = method
         def request = Request.builder().method('GET').build()
 
         expect:
@@ -73,9 +88,7 @@ class DefaultMethodMatcherSpec extends Specification {
 
     def "does not match method"() {
         setup:
-        def method = new Method()
         method.name = 'POST'
-        requestProperties.method = method
         def request = Request.builder().method('GET').build()
 
         expect:

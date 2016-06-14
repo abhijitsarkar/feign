@@ -19,8 +19,10 @@ package name.abhijitsarkar.feign.core.matcher
 
 import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.core.model.FeignMapping
+import name.abhijitsarkar.feign.core.model.FeignProperties
 import name.abhijitsarkar.feign.core.model.Headers
 import name.abhijitsarkar.feign.core.model.RequestProperties
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -28,14 +30,33 @@ import spock.lang.Unroll
  * @author Abhijit Sarkar
  */
 class DefaultHeadersMatcherSpec extends Specification {
-    def headersMatcher = new DefaultHeadersMatcher()
+    @Shared
+    def headersMatcher
+    @Shared
+    def feignProperties
+
+    def headers
     def feignMapping
     def requestProperties
+
+    def setupSpec() {
+        headersMatcher = new DefaultHeadersMatcher()
+
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
+    }
 
     def setup() {
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties
+
+        headers = new Headers()
+        headers.ignoreCase = feignProperties.ignoreCase
+        headers.ignoreUnknown = feignProperties.ignoreUnknown
+        headers.ignoreEmpty = feignProperties.ignoreEmpty
+
+        requestProperties.headers = headers
     }
 
     def "matches when no request headers and no properties headers"() {
@@ -49,9 +70,7 @@ class DefaultHeadersMatcherSpec extends Specification {
     @Unroll
     def "match found is #ignoreUnknown when unknown request headers and ignoreUnknown is #ignoreUnknown"() {
         setup:
-        def headers = new Headers()
         headers.ignoreUnknown = ignoreUnknown
-        requestProperties.headers = headers
 
         def request = Request.builder()
                 .headers(['a': 'b'])
@@ -67,10 +86,8 @@ class DefaultHeadersMatcherSpec extends Specification {
     @Unroll
     def "match found is #ignoreEmpty when no request headers, some property headers, and ignoreEmpty is #ignoreEmpty"() {
         setup:
-        def headers = new Headers()
         headers.ignoreEmpty = ignoreEmpty
         headers.pairs = ['a': 'b']
-        requestProperties.headers = headers
 
         def request = Request.builder().build()
 
@@ -84,9 +101,7 @@ class DefaultHeadersMatcherSpec extends Specification {
     @Unroll
     def "matches when a request header and the corresponding property header both have #values values"() {
         setup:
-        def headers = new Headers()
         headers.pairs = ['a': value]
-        requestProperties.headers = headers
 
         def request = Request.builder()
                 .headers(['a': value])
@@ -102,11 +117,9 @@ class DefaultHeadersMatcherSpec extends Specification {
     @Unroll
     def "match found is #ignoreCase if ignoreCase is #ignoreCase"() {
         setup:
-        def headers = new Headers()
         headers.pairs = ['a': 'B']
         headers.ignoreCase = ignoreCase
         headers.ignoreUnknown = false
-        requestProperties.headers = headers
 
         def request = Request.builder()
                 .headers(['a': 'b'])
@@ -121,11 +134,9 @@ class DefaultHeadersMatcherSpec extends Specification {
 
     def "case insensitive match only applies to values, not header names"() {
         setup:
-        def headers = new Headers()
         headers.pairs = ['a': 'b']
         headers.ignoreUnknown = false
         headers.ignoreCase = true
-        requestProperties.headers = headers
 
         def request = Request.builder()
                 .headers(['A': 'b'])
@@ -137,9 +148,7 @@ class DefaultHeadersMatcherSpec extends Specification {
 
     def "matches regex header value"() {
         setup:
-        def headers = new Headers()
         headers.pairs = ['a': 'b.*']
-        requestProperties.headers = headers
 
         def request = Request.builder()
                 .headers(['A': 'bcd'])
