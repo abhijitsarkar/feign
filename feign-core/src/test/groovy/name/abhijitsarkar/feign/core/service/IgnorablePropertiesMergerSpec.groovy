@@ -22,7 +22,6 @@ import name.abhijitsarkar.feign.core.model.Queries
 import name.abhijitsarkar.feign.core.model.RequestProperties
 import spock.lang.Shared
 import spock.lang.Specification
-
 /**
  * @author Abhijit Sarkar
  */
@@ -31,7 +30,6 @@ class IgnorablePropertiesMergerSpec extends Specification {
     def feignProperties
     @Shared
     def propertiesMerger
-    @Shared
     def requestProperties
 
     def queries
@@ -43,10 +41,10 @@ class IgnorablePropertiesMergerSpec extends Specification {
         feignProperties.ignoreCase = null
 
         propertiesMerger = new IgnorablePropertiesMerger()
-        requestProperties = new RequestProperties()
     }
 
     def setup() {
+        requestProperties = new RequestProperties()
         queries = new Queries()
     }
 

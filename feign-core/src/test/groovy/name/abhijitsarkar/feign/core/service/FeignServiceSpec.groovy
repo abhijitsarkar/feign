@@ -33,27 +33,21 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.function.BiFunction
-
 /**
  * @author Abhijit Sarkar
  */
 class FeignServiceSpec extends Specification {
     def matchers = [new DefaultPathMatcher(), new DefaultMethodMatcher(), new DefaultQueriesMatcher()
                     , new DefaultHeadersMatcher(), new DefaultBodyMatcher()]
-
-    @Shared
-    def feignProperties
     @Shared
     def request
 
+    def feignProperties
     def feignService
     def eventPublisher
     def feignMapping
 
     def setupSpec() {
-        feignProperties = new FeignProperties()
-        feignProperties.postConstruct()
-
         request = Request.builder()
                 .path('/a')
                 .method('GET')
@@ -61,6 +55,8 @@ class FeignServiceSpec extends Specification {
     }
 
     def setup() {
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
         feignMapping = new FeignMapping()
         feignProperties.mappings = [feignMapping] as List
 

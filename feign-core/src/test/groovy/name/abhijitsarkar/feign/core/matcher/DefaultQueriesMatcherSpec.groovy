@@ -25,28 +25,25 @@ import name.abhijitsarkar.feign.core.model.RequestProperties
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author Abhijit Sarkar
  */
 class DefaultQueriesMatcherSpec extends Specification {
     @Shared
     def queriesMatcher
-    @Shared
-    def feignProperties
 
+    def feignProperties
     def queries
     def feignMapping
     def requestProperties
 
     def setupSpec() {
         queriesMatcher = new DefaultQueriesMatcher()
-
-        feignProperties = new FeignProperties()
-        feignProperties.postConstruct()
     }
 
     def setup() {
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties

@@ -24,28 +24,25 @@ import name.abhijitsarkar.feign.core.model.Path
 import name.abhijitsarkar.feign.core.model.RequestProperties
 import spock.lang.Shared
 import spock.lang.Specification
-
 /**
  * @author Abhijit Sarkar
  */
 class DefaultPathMatcherSpec extends Specification {
     @Shared
     def pathMatcher
-    @Shared
-    def feignProperties
 
+    def feignProperties
     def path
     def feignMapping
     def requestProperties
 
     def setupSpec() {
         pathMatcher = new DefaultPathMatcher()
-
-        feignProperties = new FeignProperties()
-        feignProperties.postConstruct()
     }
 
     def setup() {
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties

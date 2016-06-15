@@ -24,30 +24,27 @@ import name.abhijitsarkar.feign.core.model.Method
 import name.abhijitsarkar.feign.core.model.RequestProperties
 import spock.lang.Shared
 import spock.lang.Specification
-
 /**
  * @author Abhijit Sarkar
  */
 class DefaultMethodMatcherSpec extends Specification {
     @Shared
     def methodMatcher
-    @Shared
-    def feignProperties
 
+    def feignProperties
     def method
     def feignMapping
     def requestProperties
 
     def setupSpec() {
         methodMatcher = new DefaultMethodMatcher()
-
-        feignProperties = new FeignProperties()
-        feignProperties.postConstruct()
     }
 
     def setup() {
         method = new Method()
 
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties

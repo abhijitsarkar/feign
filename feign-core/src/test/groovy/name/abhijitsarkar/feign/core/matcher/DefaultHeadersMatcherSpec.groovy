@@ -25,28 +25,25 @@ import name.abhijitsarkar.feign.core.model.RequestProperties
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * @author Abhijit Sarkar
  */
 class DefaultHeadersMatcherSpec extends Specification {
     @Shared
     def headersMatcher
-    @Shared
-    def feignProperties
 
+    def feignProperties
     def headers
     def feignMapping
     def requestProperties
 
     def setupSpec() {
         headersMatcher = new DefaultHeadersMatcher()
-
-        feignProperties = new FeignProperties()
-        feignProperties.postConstruct()
     }
 
     def setup() {
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties

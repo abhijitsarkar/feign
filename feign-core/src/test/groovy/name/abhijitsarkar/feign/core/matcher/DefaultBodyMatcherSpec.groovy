@@ -31,21 +31,19 @@ import spock.lang.Unroll
 class DefaultBodyMatcherSpec extends Specification {
     @Shared
     def bodyMatcher
-    @Shared
-    def feignProperties
 
+    def feignProperties
     def feignMapping
     def requestProperties
     def body
 
     def setupSpec() {
         bodyMatcher = new DefaultBodyMatcher()
-
-        feignProperties = new FeignProperties()
-        feignProperties.postConstruct()
     }
 
     def setup() {
+        feignProperties = new FeignProperties()
+        feignProperties.postConstruct()
         feignMapping = new FeignMapping()
         requestProperties = new RequestProperties()
         feignMapping.request = requestProperties
