@@ -15,11 +15,14 @@
  *
  */
 
-dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-data-rest',
-            "org.scala-lang:scala-reflect:$scalaVersion"
-    )
-    compile project(':feign-api')
-    testRuntime("cglib:cglib-nodep:$cglibVersion")
-}
+package name.abhijitsarkar.feign.persistence.repository
+
+import name.abhijitsarkar.feign.persistence.RecordingRequest
+import org.springframework.data.mongodb.repository.MongoRepository
+import org.springframework.data.rest.core.annotation.RepositoryRestResource
+
+/**
+  * @author Abhijit Sarkar
+  */
+@RepositoryRestResource(collectionResourceRel = "requests", path = "requests", itemResourceRel = "request")
+trait MongoDbRequestRepository extends MongoRepository[RecordingRequest, String]

@@ -15,11 +15,30 @@
  *
  */
 
-dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-data-rest',
-            "org.scala-lang:scala-reflect:$scalaVersion"
-    )
-    compile project(':feign-api')
-    testRuntime("cglib:cglib-nodep:$cglibVersion")
+package name.abhijitsarkar.feign.core.model
+
+import java.lang.{Boolean => JavaBoolean}
+
+import name.abhijitsarkar.feign.persistence.IdGenerator
+
+import scala.beans.BeanProperty
+
+/**
+  * @author Abhijit Sarkar
+  */
+class RecordingProperties {
+  var disable: Boolean = _
+  @BeanProperty
+  var idGenerator: Class[_ <: IdGenerator] = _
+
+  setDisable(null)
+
+  def isDisable = disable
+
+  def setDisable(disable: JavaBoolean) {
+    this.disable = if (disable == null) false
+    else disable
+  }
+
+  override def toString = s"RecordingProperties($disable, $idGenerator)"
 }

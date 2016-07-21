@@ -15,11 +15,28 @@
  *
  */
 
-dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-data-rest',
-            "org.scala-lang:scala-reflect:$scalaVersion"
-    )
-    compile project(':feign-api')
-    testRuntime("cglib:cglib-nodep:$cglibVersion")
+package name.abhijitsarkar.feign.persistence
+
+import name.abhijitsarkar.feign.Request
+import org.scalatest.{FlatSpec, Matchers}
+
+/**
+  * @author Abhijit Sarkar
+  */
+class DefaultIdGeneratorSpec extends FlatSpec with Matchers {
+  val idGenerator = new DefaultIdGenerator
+
+  "id generator" should "generate id for absolute path" in {
+    val request = new Request()
+    request.path = "/abc/xyz"
+
+    idGenerator.id(request) should startWith ("abc-")
+  }
+
+  it should "generate id for relative path" in {
+    val request = new Request()
+    request.path = "abc/xyz"
+
+    idGenerator.id(request) should startWith ("abc-")
+  }
 }

@@ -15,11 +15,13 @@
  *
  */
 
-dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-data-rest',
-            "org.scala-lang:scala-reflect:$scalaVersion"
-    )
-    compile project(':feign-api')
-    testRuntime("cglib:cglib-nodep:$cglibVersion")
+package name.abhijitsarkar.feign.persistence
+
+import name.abhijitsarkar.feign.Request
+
+/**
+  * @author Abhijit Sarkar
+  */
+trait IdGenerator {
+  def id(request: Request): String
 }

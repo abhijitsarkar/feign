@@ -15,11 +15,23 @@
  *
  */
 
-dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-data-rest',
-            "org.scala-lang:scala-reflect:$scalaVersion"
-    )
-    compile project(':feign-api')
-    testRuntime("cglib:cglib-nodep:$cglibVersion")
+package name.abhijitsarkar.feign
+
+import scala.beans.BeanProperty
+import scala.collection.immutable.{List => ImmutableList, Map => ImmutableMap}
+
+/**
+  * @author Abhijit Sarkar
+  */
+class Request {
+  @BeanProperty
+  var path: String = "/**"
+  @BeanProperty
+  var method: String = "GET"
+  @BeanProperty
+  var queryParams: Map[String, ImmutableList[String]] = ImmutableMap()
+  @BeanProperty
+  var headers: Map[String, String] = ImmutableMap()
+  @BeanProperty
+  var body: Option[String] = None
 }

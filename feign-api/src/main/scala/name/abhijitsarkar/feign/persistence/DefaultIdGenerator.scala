@@ -15,11 +15,21 @@
  *
  */
 
-dependencies {
-    compile(
-            'org.springframework.boot:spring-boot-starter-data-rest',
-            "org.scala-lang:scala-reflect:$scalaVersion"
-    )
-    compile project(':feign-api')
-    testRuntime("cglib:cglib-nodep:$cglibVersion")
+package name.abhijitsarkar.feign.persistence
+
+import name.abhijitsarkar.feign.Request
+
+/**
+  * @author Abhijit Sarkar
+  */
+class DefaultIdGenerator extends IdGenerator {
+  val pattern = """^(?:/?)([^/]+)(?:.*)$""".r
+
+  override def id(request: Request): String = {
+    val prefix = pattern.findFirstMatchIn("/abc/xyz")
+      .map(_ group 1)
+      .getOrElse("unknown")
+
+    s"${prefix}-${request.path.hashCode}"
+  }
 }
