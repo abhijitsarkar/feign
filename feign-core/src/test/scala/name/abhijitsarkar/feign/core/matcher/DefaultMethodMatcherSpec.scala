@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.matcher
 
 import name.abhijitsarkar.feign.Request
@@ -22,7 +38,7 @@ class DefaultMethodMatcherSpec extends FlatSpec with Matchers with BeforeAndAfte
     feignMapping.request = requestProperties
 
     method = new Method
-    method.ignoreCase = feignProperties.ignoreCase
+    method.setIgnoreCase(feignProperties.getIgnoreCase)
 
     requestProperties.method = method
   }
@@ -47,7 +63,7 @@ class DefaultMethodMatcherSpec extends FlatSpec with Matchers with BeforeAndAfte
 
   it should "match using ignore case" in {
     method.name = "get"
-    method.ignoreCase = Some(true)
+    method.setIgnoreCase(true)
     val request = new Request
     request.method = "GET"
 

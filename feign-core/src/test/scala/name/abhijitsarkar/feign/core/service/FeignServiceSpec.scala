@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.service
 
 import java.util.function.BiFunction
@@ -9,6 +25,8 @@ import name.abhijitsarkar.feign.persistence.{IdGenerator, RecordingRequest}
 import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 import org.springframework.context.ApplicationEventPublisher
+
+import scala.collection.JavaConverters._
 
 /**
   * @author Abhijit Sarkar
@@ -30,11 +48,11 @@ class FeignServiceSpec extends FlatSpec with Matchers with BeforeAndAfter {
     feignProperties = new FeignProperties()
     feignProperties.postConstruct()
     feignMapping = new FeignMapping()
-    feignProperties.mappings = List(feignMapping)
+    feignProperties.mappings = List(feignMapping).asJava
 
     eventPublisher = Mockito.mock(classOf[ApplicationEventPublisher])
 
-    feignService = new FeignService(feignProperties, eventPublisher, matchers)
+    feignService = new FeignService(feignProperties, eventPublisher, matchers.asJavaCollection)
   }
 
   "feign service" should "find mapping and publish event using given id generator" in {
@@ -99,7 +117,7 @@ class FeignServiceSpec extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   it should "not find mapping but publish event using global generator" in {
-    feignService.matchers = List(new NoMatchMatcher)
+    feignService.matchers = List(new NoMatchMatcher).asJavaCollection
     feignProperties.recording.disable = false
 
     val mapping = feignService.findFeignMapping(request)
@@ -116,7 +134,7 @@ class FeignServiceSpec extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   it should "not find mapping and not publish event as per recording disabled" in {
-    feignService.matchers = List(new NoMatchMatcher)
+    feignService.matchers = List(new NoMatchMatcher).asJavaCollection
     feignProperties.recording.disable = true
 
     val mapping = feignService.findFeignMapping(request)

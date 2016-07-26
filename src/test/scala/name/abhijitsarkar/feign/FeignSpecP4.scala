@@ -16,17 +16,12 @@
 
 package name.abhijitsarkar.feign
 
-import java.net.URI
-
 import name.abhijitsarkar.feign.core.web.FeignController
-import name.abhijitsarkar.feign.persistence.RecordingRequest
 import org.scalatest.{FlatSpec, Matchers}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.boot.test.{SpringApplicationConfiguration, TestRestTemplate, WebIntegrationTest}
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.hateoas.client.Traverson
-import org.springframework.hateoas.{MediaTypes, Resource}
 import org.springframework.http.HttpMethod._
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.OK
 import org.springframework.test.context.{ActiveProfiles, TestContextManager}
 import org.springframework.web.util.UriComponentsBuilder
@@ -36,8 +31,8 @@ import org.springframework.web.util.UriComponentsBuilder
   */
 @SpringApplicationConfiguration(Array(classOf[FeignApp], classOf[FeignConfiguration]))
 @WebIntegrationTest(randomPort = true)
-@ActiveProfiles(Array("p1"))
-class FeignSpecP1 extends FlatSpec with Matchers {
+@ActiveProfiles(Array("p3"))
+class FeignSpecP4 extends FlatSpec with Matchers {
   @Autowired
   var FeignController: FeignController = _
 
@@ -49,32 +44,14 @@ class FeignSpecP1 extends FlatSpec with Matchers {
   val restTemplate = new TestRestTemplate()
   val uriBuilder = UriComponentsBuilder.fromUriString(s"http://localhost:$port")
 
-  "feign" should "match POST request and find it" in {
-    val uri = uriBuilder.path("feign/abc").build().toUri()
-    val response = restTemplate.exchange(uri, POST, null, classOf[String])
+  "feign" should "disable recording" in {
+    val uri = uriBuilder.path("feign/xyz").build().toUri()
+    var response = restTemplate.exchange(uri, GET, null, classOf[String])
 
     response.getStatusCode shouldBe OK
 
-    val traverson = new Traverson(new URI(s"http://localhost:$port"), MediaTypes.HAL_JSON)
+    response = restTemplate.exchange(s"http://localhost:$port/requests/1", GET, null, classOf[String])
 
-    val t = new ParameterizedTypeReference[Resource[RecordingRequest]]() {}
-
-    def request = traverson.
-      follow("requests").
-      follow("$._embedded.requests[0]._links.self.href").
-      toObject(t)
-      .getContent
-
-    println(request)
-
-    request.path shouldEqual "/feign/abc"
-    request.method shouldEqual "POST"
-  }
-
-  it should "match any GET request" in {
-    val uri = uriBuilder.path("feign/abc").build().toUri()
-    val response = restTemplate.exchange(uri, GET, null, classOf[String])
-
-    response.getStatusCode shouldBe OK
+    response.getStatusCode shouldBe HttpStatus.NOT_FOUND
   }
 }

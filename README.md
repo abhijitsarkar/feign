@@ -4,6 +4,7 @@ Feign can be used to stub out any system you integrate with via HTTP(S). It is b
 that none of the other mock servers provide clean separation between the core features and execution.
 
 ## Technologies Used
+   * Scala
    * [Spring Boot](http://projects.spring.io/spring-boot)
    * [Spring HATEOAS](http://projects.spring.io/spring-hateoas)
    * [Spring Data Rest](http://projects.spring.io/spring-data-rest)
@@ -216,7 +217,7 @@ If you use it and you like it, you can help by spreading the word!
 
 ## License
 
-Copyright 2015-2016 Abhijit Sarkar - Released under the GPLv3 license.
+Copyright 2016 Abhijit Sarkar - Released under the GPLv3 license.
 
 
 

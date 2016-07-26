@@ -4,7 +4,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 3 of the License.
- *  *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -12,7 +12,6 @@
  *
  * A copy of the GNU General Public License accompanies this software,
  * and is also available at http://www.gnu.org/licenses.
- *
  */
 
 package name.abhijitsarkar.feign.core.model
@@ -24,10 +23,10 @@ import java.lang.{Boolean => JavaBoolean}
   */
 class Path {
   var uri: String = _
-  var ignoreCase: Option[Boolean] = _
+  var ignoreCase: JavaBoolean = _
 
   setUri(null)
-  setIgnoreCase(null.asInstanceOf[JavaBoolean])
+  setIgnoreCase(null)
 
   def getUri = uri
 
@@ -38,14 +37,12 @@ class Path {
     else uri
   }
 
+  def ignoreCaseToScala: Option[Boolean] = Option(ignoreCase)
+
   def getIgnoreCase = ignoreCase
 
-  def setIgnoreCase(ignoreCase: Option[Boolean]) {
-    this.ignoreCase = ignoreCase
-  }
-
   def setIgnoreCase(ignoreCase: JavaBoolean) {
-    this.ignoreCase = Option(ignoreCase)
+    this.ignoreCase = if (ignoreCase == null) JavaBoolean.FALSE else ignoreCase
   }
 
   override def toString = s"Path($uri, $ignoreCase)"

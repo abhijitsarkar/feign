@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.matcher
 
 import java.util.{List => JavaList, Map => JavaMap}
@@ -27,9 +43,9 @@ class DefaultHeadersMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     feignMapping.request = requestProperties
 
     headers = new Headers
-    headers.ignoreCase = feignProperties.ignoreCase
-    headers.ignoreUnknown = feignProperties.ignoreUnknown
-    headers.ignoreEmpty = feignProperties.ignoreEmpty
+    headers.setIgnoreCase(feignProperties.getIgnoreCase)
+    headers.setIgnoreUnknown(feignProperties.getIgnoreUnknown)
+    headers.setIgnoreEmpty(feignProperties.getIgnoreEmpty)
 
     requestProperties.headers = headers
   }
@@ -46,7 +62,7 @@ class DefaultHeadersMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     request.setHeaders(Map("a" -> "b"))
 
     forAll(ignoreUnknown) { x =>
-      headers.ignoreUnknown = Option(x)
+      headers.setIgnoreUnknown(x)
 
       headersMatcher(request, feignMapping) shouldBe x
     }
@@ -58,7 +74,7 @@ class DefaultHeadersMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     headers.setPairs(Map("a" -> "b").asJava)
 
     forAll(ignoreEmpty) { x =>
-      headers.ignoreEmpty = Option(x)
+      headers.setIgnoreEmpty(x)
 
       headersMatcher(request, feignMapping) shouldBe x
     }
@@ -69,10 +85,10 @@ class DefaultHeadersMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     val request = new Request
     request.setHeaders(Map("a" -> "B"))
     headers.setPairs(Map("a" -> "b").asJava)
-    headers.ignoreUnknown = Some(false)
+    headers.setIgnoreUnknown(false)
 
     forAll(ignoreCase) { x =>
-      headers.ignoreCase = Option(x)
+      headers.setIgnoreCase(x)
 
       headersMatcher(request, feignMapping) shouldBe x
     }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.service
 
 import name.abhijitsarkar.feign.core.model.{FeignProperties, Queries, RequestProperties}
@@ -23,21 +39,21 @@ class IgnorablePropertiesMergerSpec extends FlatSpec with Matchers with BeforeAn
 
     propertiesMerger.merge(requestProperties, feignProperties)
 
-    queries.ignoreEmpty shouldEqual feignProperties.ignoreEmpty
-    queries.ignoreUnknown shouldEqual feignProperties.ignoreUnknown
-    queries.ignoreCase shouldEqual feignProperties.ignoreCase
+    queries.getIgnoreEmpty shouldEqual feignProperties.getIgnoreEmpty
+    queries.getIgnoreUnknown shouldEqual feignProperties.getIgnoreUnknown
+    queries.getIgnoreCase shouldEqual feignProperties.getIgnoreCase
   }
 
   it should "keep local properties if defined" in {
-    queries.ignoreEmpty = feignProperties.ignoreEmpty.map(!_)
-    queries.ignoreUnknown = feignProperties.ignoreUnknown.map(!_)
-    queries.ignoreCase = feignProperties.ignoreCase.map(!_)
+    queries.setIgnoreEmpty(!feignProperties.getIgnoreEmpty)
+    queries.setIgnoreUnknown(!feignProperties.getIgnoreUnknown)
+    queries.setIgnoreCase(!feignProperties.getIgnoreCase)
     requestProperties.queries = queries
 
     propertiesMerger.merge(requestProperties, feignProperties)
 
-    queries.ignoreEmpty shouldNot equal(feignProperties.ignoreEmpty)
-    queries.ignoreUnknown shouldNot equal(feignProperties.ignoreUnknown)
-    queries.ignoreCase shouldNot equal(feignProperties.ignoreCase)
+    queries.getIgnoreEmpty shouldNot equal(feignProperties.getIgnoreEmpty)
+    queries.getIgnoreUnknown shouldNot equal(feignProperties.getIgnoreUnknown)
+    queries.getIgnoreCase shouldNot equal(feignProperties.getIgnoreCase)
   }
 }

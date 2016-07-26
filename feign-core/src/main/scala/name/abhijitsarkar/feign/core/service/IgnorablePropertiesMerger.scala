@@ -1,7 +1,24 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.service
 
 import java.beans.Introspector
 import java.lang.reflect.Method
+import java.lang.{Boolean => JavaBoolean}
 
 import name.abhijitsarkar.feign.core.model.{AbstractIgnorableRequestProperties, FeignProperties, RequestProperties}
 import org.slf4j.LoggerFactory
@@ -48,7 +65,7 @@ class IgnorablePropertiesMerger {
                     logger.debug(s"Setting ${local.getName} to $ignore.")
 
                     Option(setter)
-                      .foreach(_.invoke(requestProperty, Option(ignore)))
+                      .foreach(_.invoke(requestProperty, ignore))
                   }
               }
               case _ =>
@@ -60,18 +77,26 @@ class IgnorablePropertiesMerger {
   def getPropertyDescriptors(clazz: Class[_]) = Introspector.getBeanInfo(clazz).getPropertyDescriptors.toList
 
   def invokeGetter(getter: Method, requestProperty: Object) = {
-    val ignore = Option(getter).flatMap(_.invoke(requestProperty).asInstanceOf[Option[Boolean]])
+    val ignore = Option(getter).flatMap(x => {
+      val g = x.invoke(requestProperty).asInstanceOf[JavaBoolean]
+
+      if (g == null) None else Some(g)
+    })
 
     logger.debug(s"Local getter returned: ${ignore}.")
 
-    if (ignore == null) None else ignore
+    ignore
   }
 
   def invokeSuperGetter(superGetter: Method, feignProperties: FeignProperties) = {
-    val ignore = Option(superGetter).flatMap(_.invoke(feignProperties).asInstanceOf[Option[Boolean]])
+    val ignore = Option(superGetter).flatMap(x => {
+      val g = x.invoke(feignProperties).asInstanceOf[JavaBoolean]
+
+      if (g == null) None else Some(g)
+    })
 
     logger.debug(s"Super getter returned: ${ignore}.")
 
-    if (ignore == null) None else ignore
+    ignore
   }
 }

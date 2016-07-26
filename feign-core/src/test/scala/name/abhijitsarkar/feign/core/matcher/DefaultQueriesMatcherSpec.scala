@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.matcher
 
 import java.util.{List => JavaList, Map => JavaMap}
@@ -27,9 +43,9 @@ class DefaultQueriesMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     feignMapping.request = requestProperties
 
     queries = new Queries()
-    queries.ignoreCase = feignProperties.ignoreCase
-    queries.ignoreUnknown = feignProperties.ignoreUnknown
-    queries.ignoreEmpty = feignProperties.ignoreEmpty
+    queries.setIgnoreCase(feignProperties.getIgnoreCase)
+    queries.setIgnoreUnknown(feignProperties.getIgnoreUnknown)
+    queries.setIgnoreEmpty(feignProperties.getIgnoreEmpty)
 
     requestProperties.queries = queries
   }
@@ -46,7 +62,7 @@ class DefaultQueriesMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     request.setQueryParams(Map("a" -> List("x", "y")))
 
     forAll(ignoreUnknown) { x =>
-      queries.ignoreUnknown = Option(x)
+      queries.setIgnoreUnknown(x)
 
       queriesMatcher(request, feignMapping) shouldBe x
     }
@@ -58,7 +74,7 @@ class DefaultQueriesMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     queries.setPairs(Map("a" -> List("x", "y")).mapValues(_.asJava).asJava)
 
     forAll(ignoreEmpty) { x =>
-      queries.ignoreEmpty = Option(x)
+      queries.setIgnoreEmpty(x)
 
       queriesMatcher(request, feignMapping) shouldBe x
     }
@@ -69,10 +85,10 @@ class DefaultQueriesMatcherSpec extends FlatSpec with Matchers with BeforeAndAft
     val request = new Request
     request.setQueryParams(Map("a" -> List("X", "Y")))
     queries.setPairs(Map("a" -> List("x", "y")).mapValues(_.asJava).asJava)
-    queries.ignoreUnknown = Some(false)
+    queries.setIgnoreUnknown(false)
 
     forAll(ignoreCase) { x =>
-      queries.ignoreCase = Option(x)
+      queries.setIgnoreCase(x)
 
       queriesMatcher(request, feignMapping) shouldBe x
     }

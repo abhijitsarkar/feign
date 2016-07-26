@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016, the original author or authors.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * A copy of the GNU General Public License accompanies this software,
+ * and is also available at http://www.gnu.org/licenses.
+ */
+
 package name.abhijitsarkar.feign.core.model
 
 import java.lang.{Boolean => JavaBoolean}
@@ -17,9 +33,9 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
 
     feignProperties.postConstruct
 
-    feignProperties.ignoreUnknown shouldBe true
-    feignProperties.ignoreEmpty shouldBe true
-    feignProperties.ignoreCase shouldBe false
+    feignProperties.getIgnoreUnknown shouldBe true
+    feignProperties.getIgnoreEmpty shouldBe true
+    feignProperties.getIgnoreCase shouldBe false
     feignProperties.mappings should not be null
     feignProperties.recording should not be null
   }
@@ -28,7 +44,7 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
     val feignProperties = new FeignProperties
 
     feignProperties.setIgnoreCase((null.asInstanceOf[JavaBoolean]))
-    feignProperties.ignoreCase shouldBe (false)
+    feignProperties.getIgnoreCase shouldBe (false)
   }
 
   it should "set ignoreCase" in {
@@ -37,7 +53,7 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
 
     ignoreCase.foreach { b =>
       feignProperties.setIgnoreCase(b)
-      feignProperties.ignoreCase shouldBe (b)
+      feignProperties.getIgnoreCase shouldBe (b)
     }
   }
 
@@ -45,7 +61,7 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
     val feignProperties = new FeignProperties
 
     feignProperties.setIgnoreUnknown((null.asInstanceOf[JavaBoolean]))
-    feignProperties.ignoreUnknown shouldBe (true)
+    feignProperties.getIgnoreUnknown shouldBe (true)
   }
 
   it should "set ignoreUnknown" in {
@@ -54,7 +70,7 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
 
     ignoreUnknown.foreach { b =>
       feignProperties.setIgnoreUnknown(b)
-      feignProperties.ignoreUnknown shouldBe (b)
+      feignProperties.getIgnoreUnknown shouldBe (b)
     }
   }
 
@@ -62,7 +78,7 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
     val feignProperties = new FeignProperties
 
     feignProperties.setIgnoreEmpty((null.asInstanceOf[JavaBoolean]))
-    feignProperties.ignoreEmpty shouldBe (true)
+    feignProperties.getIgnoreEmpty shouldBe (true)
   }
 
   it should "set ignoreEmpty" in {
@@ -71,7 +87,7 @@ class FeignPropertiesSpec extends FlatSpec with Matchers {
 
     ignoreEmpty.foreach { b =>
       feignProperties.setIgnoreEmpty(b)
-      feignProperties.ignoreEmpty shouldBe (b)
+      feignProperties.getIgnoreEmpty shouldBe (b)
     }
   }
 
