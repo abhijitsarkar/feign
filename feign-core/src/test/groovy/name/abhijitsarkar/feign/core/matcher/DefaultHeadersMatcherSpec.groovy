@@ -1,18 +1,16 @@
 /*
  * Copyright (c) 2016, the original author or authors.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 3 of the License.
- *  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * A copy of the GNU General Public License accompanies this software,
- * and is also available at http://www.gnu.org/licenses.
- *
+ * License for more details.
  */
 
 package name.abhijitsarkar.feign.core.matcher

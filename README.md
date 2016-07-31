@@ -180,8 +180,8 @@ that none of the other mock servers provide clean separation between the core fe
    Create a Spring Cloud application, register with discovery and then order a Martini, shaken, not stirred.
 
 ## Customizations
- 
-   * If both global and local customizations are present, the later wins.
+
+> Note: If both global and local customizations are present, the later wins.
 
    * Disable default matchers: Set the property `feign.matchers.disable: true` in the `application.yml`.
      This disables all default matchers that ship with Feign, but that does not mean you cannot pick and choose.
@@ -237,7 +237,7 @@ If you use it and you like it, you can help by spreading the word!
 
 ## License
 
-Copyright 2015-2016 Abhijit Sarkar - Released under the GPLv3 license.
+Copyright 2015-2016 Abhijit Sarkar - Released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
 
 
 
