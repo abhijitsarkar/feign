@@ -23,9 +23,12 @@ import name.abhijitsarkar.feign.core.matcher.DefaultHeadersMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultMethodMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultPathMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultQueriesMatcher
+import name.abhijitsarkar.feign.core.model.Delay
+import name.abhijitsarkar.feign.core.model.DelayStrategy
 import name.abhijitsarkar.feign.core.model.FeignMapping
 import name.abhijitsarkar.feign.core.model.FeignProperties
 import name.abhijitsarkar.feign.core.model.RequestProperties
+import name.abhijitsarkar.feign.core.model.ResponseProperties
 import name.abhijitsarkar.feign.persistence.IdGenerator
 import org.springframework.context.ApplicationEventPublisher
 import spock.lang.Shared
@@ -42,7 +45,7 @@ class FeignServiceSpec extends Specification {
     @Shared
     def request
 
-    def feignProperties
+    FeignProperties feignProperties
     def feignService
     def eventPublisher
     def feignMapping
@@ -151,6 +154,92 @@ class FeignServiceSpec extends Specification {
 
         where:
         disable << [Boolean.FALSE, Boolean.TRUE]
+    }
+
+    def "calculates constant delay as per global policy"() {
+        setup:
+        def delay = new Delay()
+        delay.delayMillis = 1
+        feignProperties.delay = delay
+
+        expect:
+        feignService.calculateResponseDelay("1", null) == 1
+    }
+
+    def "calculates linear backoff delay as per global policy"() {
+        setup:
+        def delay = new Delay()
+        delay.delayMillis = 5
+        delay.delayStrategy = DelayStrategy.WITH_LINEAR_BACK_OFF
+        feignProperties.delay = delay
+
+        expect:
+        feignService.calculateResponseDelay("1", null) == 5
+    }
+
+    def "calculates exponential backoff delay as per global policy"() {
+        setup:
+        def delay = new Delay()
+        delay.delayMillis = 10
+        delay.delayStrategy = DelayStrategy.WITH_EXPONENTIAL_BACK_OFF
+        feignProperties.delay = delay
+
+        expect:
+        feignService.calculateResponseDelay("1", null) == 10
+    }
+
+    def "calculates constant delay as per local policy"() {
+        setup:
+        def delay = new Delay()
+        delay.delayMillis = 1
+        def responseProperties = new ResponseProperties()
+        responseProperties.delay = delay
+
+        expect:
+        feignService.calculateResponseDelay("1", responseProperties) == 1
+    }
+
+    def "calculates linear backoff delay as per local policy"() {
+        setup:
+        def delay = new Delay()
+        delay.delayMillis = 5
+        delay.delayStrategy = DelayStrategy.WITH_LINEAR_BACK_OFF
+        def responseProperties = new ResponseProperties()
+        responseProperties.delay = delay
+
+        expect:
+        feignService.calculateResponseDelay("1", responseProperties) == 5
+    }
+
+    def "calculates exponential backoff delay as per local policy"() {
+        setup:
+        def delay = new Delay()
+        delay.delayMillis = 10
+        delay.delayStrategy = DelayStrategy.WITH_EXPONENTIAL_BACK_OFF
+        def responseProperties = new ResponseProperties()
+        responseProperties.delay = delay
+
+        expect:
+        feignService.calculateResponseDelay("1", responseProperties) == 10
+    }
+
+    @Unroll
+    def "determines response index when #numRequests request, #numResponse response"() {
+        expect:
+        feignService.determineResponseIndex(numRequests, numResponse) == idx
+
+        where:
+        numRequests | numResponse | idx
+        1           | 0           | 0
+        2           | 0           | 0
+        2           | 1           | 0
+        2           | 1           | 0
+        3           | 1           | 0
+        1           | 2           | 0
+        2           | 2           | 1
+        3           | 2           | 0
+        4           | 2           | 1
+        2           | 3           | 1
     }
 }
 

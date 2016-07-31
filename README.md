@@ -20,6 +20,10 @@ that none of the other mock servers provide clean separation between the core fe
             feign:
               matchers:
                 disable: false
+              delay:
+                delayMillis: 1000
+                # One of 'CONSTANT', 'WITH_LINEAR_BACK_OFF', or 'WITH_EXPONENTIAL_BACK_OFF'
+                delayStrategy: CONSTANT
               recording:
                 disable: false
                 idGenerator: name.abhijitsarkar.feign.persistence.DefaultIdGenerator
@@ -56,13 +60,22 @@ that none of the other mock servers provide clean separation between the core fe
                       ignoreUnknown: true
                       ignoreEmpty: true
                       ignoreCase: false
-                      # can specify one of 'raw', 'url', or 'classpath'
+                      # One of 'raw', 'url', or 'classpath'
                       raw: body
                   response:
-                    status: 200
-                    headers:
-                      h3: h3
-                      h4: h4
+                    -
+                      status: 200
+                      headers:
+                        h3: h3
+                        h4: h4
+                      body:
+                        # One of 'raw', 'url', or 'classpath'
+                        raw: body
+                      delay:
+                        delayMillis: 5000
+                        delayStrategy: CONSTANT
+                    -
+                      status: 500
                 -
                   request:
                     path:
@@ -76,6 +89,10 @@ that none of the other mock servers provide clean separation between the core fe
    * **Full regex support**: Mapping of requests to responses is only limited by your regex skills.
    * **Flexible content matching**: Match request body and return response based on hard-coded text,
    url resource (including file system URL), or classpath resource.
+   * **Delaying of response**: Want to simulate network delays or long-running I/O? Choose of the several
+   delay options for all or individual responses.
+   * **Series of responses**: Specify multiple responses and Feign will loop through them in order. The series
+   restarts from the beginning once exhausted.
    * **Recording of requests**: The request are saved in a backend data store
    and served on a platter using Spring Data REST. Just include the module `feign-persistence`
    in your build file. Feign ships with an embedded MongoDB but you can easily swap it out
@@ -163,6 +180,8 @@ that none of the other mock servers provide clean separation between the core fe
    Create a Spring Cloud application, register with discovery and then order a Martini, shaken, not stirred.
 
 ## Customizations
+ 
+   * If both global and local customizations are present, the later wins.
 
    * Disable default matchers: Set the property `feign.matchers.disable: true` in the `application.yml`.
      This disables all default matchers that ship with Feign, but that does not mean you cannot pick and choose.
@@ -188,7 +207,6 @@ that none of the other mock servers provide clean separation between the core fe
      To replace the default id generator, set `feign.recording.idGenerator` as shown in the above `application.yml`.
 
      You can also specify id generators for individual requests as shown in the above `application.yml`.
-     If both global and request scoped id generators are present, the later wins.
 
    * Match even parts of the image have no corresponding properties in the Feign mapping: Set `ignoreUnknown`
    true for properties shown in the above `application.yml`.
@@ -200,7 +218,7 @@ that none of the other mock servers provide clean separation between the core fe
 
    * Disable recording: Set the property `feign.recording.disable: true` in the `application.yml` to disable recording
    for all requests. You can also disable recording for individual requests as shown in the above `application.yml`.
-
+   
    * Use a different data store for storing recorded requests: If you are using Spring Data, you need to implement
    a [Repository](http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/Repository.html) and a
    `RecordingService`. Look in the `feign-persistence` module for a MongoDB version of those.
@@ -208,6 +226,9 @@ that none of the other mock servers provide clean separation between the core fe
       If you are not using Spring Data, you can hand roll your persistence logic. Trouble is, Spring Data REST
    depends on Spring Data and thus, without it, you will have to write all the code for the REST endpoints to manage your
    request data store. Seriously, unless you are paid by hour, do not do it.
+   
+   * Use a different delay strategy: The default delay strategy is `CONSTANT`, meaning the response is delayed by the 
+   same amount every time. You can choose another from the enum `DelayStrategy`. The names are self-explanatory.  
 
 ## Contribute
 

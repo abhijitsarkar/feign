@@ -39,11 +39,13 @@ import static java.util.Collections.emptyList;
 public class FeignProperties extends AbstractIgnorableRequestProperties {
     private RecordingProperties recording;
     private List<FeignMapping> mappings;
+    private Delay delay;
 
     @PostConstruct
     public void postConstruct() {
         setMappings(mappings);
         setRecording(recording);
+        setDelay(delay);
         setIgnoreCase(null);
         setIgnoreUnknown(null);
         setIgnoreEmpty(null);
@@ -59,6 +61,10 @@ public class FeignProperties extends AbstractIgnorableRequestProperties {
         if (this.recording.getIdGenerator() == null) {
             this.recording.setIdGenerator(DefaultIdGenerator.class);
         }
+    }
+
+    public void setDelay(Delay delay) {
+        this.delay = delay == null ? new Delay() : delay;
     }
 
     public void setIgnoreCase(Boolean ignoreCase) {

@@ -17,9 +17,10 @@
 
 package name.abhijitsarkar.feign.core.web;
 
+import lombok.extern.slf4j.Slf4j;
 import name.abhijitsarkar.feign.Request;
 import name.abhijitsarkar.feign.core.model.Body;
-import name.abhijitsarkar.feign.core.model.FeignMapping;
+import name.abhijitsarkar.feign.core.model.Response;
 import name.abhijitsarkar.feign.core.model.ResponseProperties;
 import name.abhijitsarkar.feign.core.service.FeignService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,17 +41,21 @@ import static org.springframework.util.StringUtils.isEmpty;
  * @author Abhijit Sarkar
  */
 @RestController
+@Slf4j
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize"})
 public class FeignController {
     @Autowired
     FeignService feignService;
 
     @RequestMapping(path = "/feign/**", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<?> all(Request request) {
-        Optional<FeignMapping> feignMapping = feignService.findFeignMapping(request);
+    ResponseEntity<?> all(Request request) throws InterruptedException {
+        Optional<Response> optionalResponse = feignService.findFeignMapping(request);
 
-        if (feignMapping.isPresent()) {
-            ResponseProperties rp = feignMapping.get().getResponse();
+        if (optionalResponse.isPresent()) {
+            ResponseProperties rp = optionalResponse.get().getResponseProperties();
+            long delay = optionalResponse.get().getDelayMillis();
+
+            Thread.sleep(delay);
 
             HttpHeaders httpHeaders = new HttpHeaders();
 

@@ -18,6 +18,7 @@
 package name.abhijitsarkar.feign.core.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,8 @@ public class ResponseProperties {
     private Integer status;
     private Map<String, String> headers;
     private Body body;
+    @Setter
+    private Delay delay;
 
     public ResponseProperties() {
         setStatus(null);

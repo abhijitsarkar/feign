@@ -17,31 +17,9 @@
 
 package name.abhijitsarkar.feign.core.model;
 
-import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Abhijit Sarkar
  */
-@Getter
-@SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.SingularField"})
-public class FeignMapping {
-    private RequestProperties request;
-    private List<ResponseProperties> response;
-
-    public FeignMapping() {
-        super();
-        setRequest(null);
-        setResponse(null);
-    }
-
-    public void setRequest(RequestProperties request) {
-        this.request = (request == null) ? new RequestProperties() : request;
-    }
-
-    public void setResponse(List<ResponseProperties> response) {
-        this.response = (response == null) ? new ArrayList<>() : response;
-    }
+public enum DelayStrategy {
+    CONSTANT, WITH_LINEAR_BACK_OFF, WITH_EXPONENTIAL_BACK_OFF;
 }
