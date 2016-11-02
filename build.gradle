@@ -16,59 +16,123 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
     }
     dependencies {
-        classpath(
-                "io.spring.gradle:dependency-management-plugin:$depMgmtPluginVersion"
-        )
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
-}
-
-apply plugin: 'groovy'
-
-dependencies {
-    testCompile(
-            'org.springframework.boot:spring-boot-starter-web'
-    )
-    testCompile(
-            project(':feign-core'),
-            project(':feign-persistence')
-    )
 }
 
 allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
     apply plugin: 'groovy'
-    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
 
     repositories {
         mavenLocal()
         mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
     }
 
     apply from: "$gradleCommonUrl"
 
     group = 'name.abhijitsarkar.feign'
-    version = '1.0-SNAPSHOT'
+    version = '2.0-SNAPSHOT'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.boot:spring-boot-starter-parent:$springBootVersion"
+            mavenBom "org.springframework.boot.experimental:spring-boot-dependencies-web-reactive:$springBootDependenciesWebReactiveVersion"
         }
     }
 
     dependencies {
         compileOnly("org.projectlombok:lombok:$lombokVersion")
-        runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-        )
+        compile("org.apache.commons:commons-lang3:$commonsLangVersion")
         testCompile(
-                'org.spockframework:spock-spring',
+                "org.spockframework:spock-spring:$spockVersion",
+                "org.spockframework:spock-core:$spockVersion",
                 'org.springframework.boot:spring-boot-starter-test',
-                'com.jayway.jsonpath:json-path'
+                'com.jayway.jsonpath:json-path',
+                'io.projectreactor.ipc:reactor-netty',
+                'io.netty:netty-all'
+        )
+        testRuntime(
+                "cglib:cglib-nodep:$cglibVersion"
+        )
+    }
+
+    project.configurations.all {
+        resolutionStrategy {
+            // cache dynamic versions for 10 minutes
+            cacheDynamicVersionsFor 10 * 60, 'seconds'
+            // don't cache changing modules at all
+            cacheChangingModulesFor 0, 'seconds'
+        }
+    }
+
+    project.bootRepackage.enabled = false
+    project.bootRun.enabled = false
+    project.findMainClass.enabled = false
+}
+
+dependencies {
+    testCompile(
+            'org.springframework.boot.experimental:spring-boot-starter-web-reactive',
+            project(':feign-starter'),
+            project(':feign-persistence')
+    )
+    testRuntime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
+}
+
+project('feign-persistence') {
+    dependencies {
+        compile(
+                project(':feign-api'),
+                'org.springframework.boot:spring-boot-starter-data-mongodb',
+                'org.springframework.boot:spring-boot-starter-data-rest'
+        )
+    }
+}
+
+project('feign-core') {
+    dependencies {
+        compile(
+                project(':feign-api'),
+                'org.springframework.boot.experimental:spring-boot-starter-web-reactive'
+        )
+    }
+}
+
+project('feign-api') {
+    dependencies {
+        compile(
+                'org.springframework.boot.experimental:spring-boot-starter-web-reactive',
+                'org.springframework.data:spring-data-commons'
+        )
+    }
+}
+
+project('feign-web') {
+    dependencies {
+        compile(
+                project(':feign-api'),
+                'org.springframework.boot.experimental:spring-boot-starter-web-reactive',
+                'org.springframework.boot:spring-boot-starter-web'
+        )
+    }
+}
+
+project('feign-starter') {
+    dependencies {
+        compile(
+                project(':feign-core'),
+                project(':feign-web')
         )
     }
 }

@@ -15,15 +15,21 @@
 
 package name.abhijitsarkar.feign
 
+import name.abhijitsarkar.feign.model.Request
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.hateoas.MediaTypes
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.client.Traverson
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.client.reactive.ClientRequest
+import org.springframework.web.client.reactive.ClientResponse
+import reactor.core.publisher.Mono
+
+import java.util.function.Function
 
 import static org.springframework.http.HttpMethod.GET
-import static org.springframework.http.HttpMethod.POST
 import static org.springframework.http.HttpStatus.OK
 
 /**
@@ -33,14 +39,17 @@ import static org.springframework.http.HttpStatus.OK
 class FeignSpecP1 extends AbstractFeignSpec {
     def "matches POST request and finds it"() {
         setup:
-        def uri = uriBuilder.path('feign/abc').build().toUri()
+        ClientRequest<Void> request1 = ClientRequest.POST("http://localhost:{port}/feign/abc", port)
+                .build();
 
         and:
-        def ResponseEntity<String> response =
-                restTemplate.exchange(uri, POST, null, String)
+        def response = webClient.exchange(request1)
+        Function<ClientResponse, Mono<HttpStatus>> fn = { r -> Mono.just(r.statusCode())}
+        def statusCode = response.then(fn)
+                .block()
 
         when:
-        assert response.statusCode == OK
+        assert statusCode == OK
 
         /* https://github.com/spring-projects/spring-hateoas/blob/master/src/test/java/org/springframework/hateoas/client/TraversonTest.java */
         Traverson traverson = new Traverson(new URI("http://localhost:$port"), MediaTypes.HAL_JSON);
@@ -48,17 +57,17 @@ class FeignSpecP1 extends AbstractFeignSpec {
         ParameterizedTypeReference<Resource<Request>> type =
                 new ParameterizedTypeReference<Resource<Request>>() {};
 
-        def request = traverson.
+        def request2 = traverson.
                 follow('requests').
                 follow('$._embedded.requests[0]._links.self.href').
                 toObject(type)
                 .content
 
-        println(request)
+        println(request2)
 
         then:
-        request.path == '/feign/abc'
-        request.method == 'POST'
+        request2.path == '/feign/abc'
+        request2.method == 'POST'
     }
 
     def "matches any GET request"() {

@@ -18,7 +18,7 @@ package name.abhijitsarkar.feign.persistence;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import name.abhijitsarkar.feign.Request;
+import name.abhijitsarkar.feign.model.Request;
 import org.springframework.data.annotation.Id;
 
 import java.util.Objects;
@@ -26,12 +26,12 @@ import java.util.Objects;
 /**
  * @author Abhijit Sarkar
  */
-@Getter
 @NoArgsConstructor
 @ToString
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize", "PMD.ImmutableField", "PMD.SingularField"})
 public class RecordingRequest extends Request {
     @Id
+    @Getter
     private String id;
 
     public RecordingRequest(Request request, String id) {

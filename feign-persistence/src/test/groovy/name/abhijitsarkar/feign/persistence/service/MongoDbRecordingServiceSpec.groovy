@@ -15,11 +15,12 @@
 
 package name.abhijitsarkar.feign.persistence.service
 
+import name.abhijitsarkar.feign.model.Request
 import name.abhijitsarkar.feign.persistence.RecordingRequest
-import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.persistence.repository.MongoDbRequestRepository
 import org.springframework.context.PayloadApplicationEvent
 import spock.lang.Specification
+
 /**
  * @author Abhijit Sarkar
  */

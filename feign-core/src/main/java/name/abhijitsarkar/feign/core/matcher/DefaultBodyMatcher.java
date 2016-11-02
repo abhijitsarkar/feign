@@ -16,16 +16,16 @@
 package name.abhijitsarkar.feign.core.matcher;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.Request;
-import name.abhijitsarkar.feign.core.model.Body;
-import name.abhijitsarkar.feign.core.model.FeignMapping;
-import name.abhijitsarkar.feign.core.model.RequestProperties;
+import name.abhijitsarkar.feign.model.Body;
+import name.abhijitsarkar.feign.model.FeignMapping;
+import name.abhijitsarkar.feign.model.Request;
+import name.abhijitsarkar.feign.model.RequestProperties;
 
 import java.util.Locale;
 import java.util.function.BiFunction;
 
-import static com.google.common.base.Strings.nullToEmpty;
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 /**
  * @author Abhijit Sarkar
@@ -41,7 +41,7 @@ public class DefaultBodyMatcher implements BiFunction<Request, FeignMapping, Boo
         Boolean ignoreUnknown = body.isIgnoreUnknown();
         Boolean ignoreEmpty = body.isIgnoreEmpty();
 
-        String content = nullToEmpty(body.getContent());
+        String content = trimToEmpty(body.getContent());
 
         if ((isEmpty(requestBody) && isEmpty(content))
                 || (isEmpty(requestBody) && ignoreEmpty)

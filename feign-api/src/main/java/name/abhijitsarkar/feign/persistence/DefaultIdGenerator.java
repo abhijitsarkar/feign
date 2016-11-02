@@ -18,7 +18,7 @@ package name.abhijitsarkar.feign.persistence;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.Request;
+import name.abhijitsarkar.feign.model.Request;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

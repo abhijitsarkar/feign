@@ -16,9 +16,9 @@
 package name.abhijitsarkar.feign.core.service;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.core.model.AbstractIgnorableRequestProperties;
 import name.abhijitsarkar.feign.core.model.FeignProperties;
-import name.abhijitsarkar.feign.core.model.RequestProperties;
+import name.abhijitsarkar.feign.model.AbstractIgnorableRequestProperties;
+import name.abhijitsarkar.feign.model.RequestProperties;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.IntrospectionException;

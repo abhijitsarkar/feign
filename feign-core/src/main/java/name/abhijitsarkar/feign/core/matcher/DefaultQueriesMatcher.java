@@ -15,12 +15,12 @@
 
 package name.abhijitsarkar.feign.core.matcher;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.Request;
-import name.abhijitsarkar.feign.core.model.FeignMapping;
-import name.abhijitsarkar.feign.core.model.Queries;
-import name.abhijitsarkar.feign.core.model.RequestProperties;
+import name.abhijitsarkar.feign.model.FeignMapping;
+import name.abhijitsarkar.feign.model.Queries;
+import name.abhijitsarkar.feign.model.Request;
+import name.abhijitsarkar.feign.model.RequestProperties;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -29,12 +29,12 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsFirst;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.empty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -112,14 +112,14 @@ public class DefaultQueriesMatcher implements BiFunction<Request, FeignMapping, 
 
     private boolean isContainsMatch(List<String> valuesFromRequestProperties, String valueFromRequest, boolean ignoreCase) {
         Stream<String> values = valuesFromRequestProperties.stream()
-                .map(Strings::nullToEmpty);
+                .map(StringUtils::trimToEmpty);
 
         if (ignoreCase) {
             return values.map(String::toLowerCase)
-                    .anyMatch(v -> nullToEmpty(valueFromRequest).toLowerCase().matches(v));
+                    .anyMatch(v -> trimToEmpty(valueFromRequest).toLowerCase().matches(v));
         }
 
-        return values.anyMatch(v -> nullToEmpty(valueFromRequest).matches(v));
+        return values.anyMatch(v -> trimToEmpty(valueFromRequest).matches(v));
     }
 
 }

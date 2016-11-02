@@ -16,6 +16,10 @@
 package name.abhijitsarkar.feign.core.model;
 
 import lombok.Getter;
+import name.abhijitsarkar.feign.model.AbstractIgnorableRequestProperties;
+import name.abhijitsarkar.feign.model.Delay;
+import name.abhijitsarkar.feign.model.FeignMapping;
+import name.abhijitsarkar.feign.model.RecordingProperties;
 import name.abhijitsarkar.feign.persistence.DefaultIdGenerator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

@@ -15,6 +15,8 @@
 
 package name.abhijitsarkar.feign.core.model
 
+import name.abhijitsarkar.feign.model.FeignMapping
+import name.abhijitsarkar.feign.model.RecordingProperties
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -15,38 +15,25 @@
 
 package name.abhijitsarkar.feign
 
-import name.abhijitsarkar.feign.core.web.FeignController
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.SpringApplicationConfiguration
-import org.springframework.boot.test.TestRestTemplate
-import org.springframework.boot.test.WebIntegrationTest
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.util.UriComponentsBuilder
+import org.springframework.boot.context.embedded.LocalServerPort
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import org.springframework.web.client.reactive.WebClient
 import spock.lang.Specification
+
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 /**
  * @author Abhijit Sarkar
  */
-@SpringApplicationConfiguration([FeignApp, FeignConfiguration])
-@WebIntegrationTest(randomPort = true)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = [FeignApp])
 abstract class AbstractFeignSpec extends Specification {
-    @Autowired
-    FeignController feignController
+    @LocalServerPort
+    int port;
 
-    @Value('${local.server.port}')
-    protected int port
-
-    protected RestTemplate restTemplate = new TestRestTemplate()
-
-    protected UriComponentsBuilder uriBuilder
-
-//    @PostConstruct
-//    def postConstruct() {
-//        uriBuilder = UriComponentsBuilder.fromUriString("http://localhost:$port")
-//    }
+    WebClient webClient;
 
     def setup() {
-        uriBuilder = UriComponentsBuilder.fromUriString("http://localhost:$port")
+        this.webClient = WebClient.create(new ReactorClientHttpConnector())
     }
 }

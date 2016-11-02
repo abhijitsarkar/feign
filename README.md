@@ -191,7 +191,7 @@ that none of the other mock servers provide clean separation between the core fe
          DefaultMethodMatcher defaultMethodMatcher() {
              return new DefaultMethodMatcher();
          }
-        Same can be done for all the default matchers in the `feign-core` module.
+     Same can be done for all the default matchers in the `feign-core` module.
 
    * Add custom matcher: Create a bean that implements `BiFunction<Request, FeignMapping, Boolean>`. It will
    be added to the list of matchers. For a mapping to be found, all matchers must match the request.

@@ -16,8 +16,8 @@
 package name.abhijitsarkar.feign.core.service
 
 import name.abhijitsarkar.feign.core.model.FeignProperties
-import name.abhijitsarkar.feign.core.model.Queries
-import name.abhijitsarkar.feign.core.model.RequestProperties
+import name.abhijitsarkar.feign.model.Queries
+import name.abhijitsarkar.feign.model.RequestProperties
 import spock.lang.Shared
 import spock.lang.Specification
 /**

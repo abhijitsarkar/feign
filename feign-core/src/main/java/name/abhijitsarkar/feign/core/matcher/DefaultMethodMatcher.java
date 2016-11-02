@@ -16,9 +16,9 @@
 package name.abhijitsarkar.feign.core.matcher;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.Request;
-import name.abhijitsarkar.feign.core.model.FeignMapping;
-import name.abhijitsarkar.feign.core.model.RequestProperties;
+import name.abhijitsarkar.feign.model.Request;
+import name.abhijitsarkar.feign.model.FeignMapping;
+import name.abhijitsarkar.feign.model.RequestProperties;
 
 import java.util.Locale;
 import java.util.function.BiFunction;

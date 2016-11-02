@@ -20,6 +20,7 @@ import name.abhijitsarkar.feign.matcher.AlwaysTrueMatcher
 import name.abhijitsarkar.feign.persistence.ConstantIdGenerator
 import name.abhijitsarkar.feign.persistence.FeignPersistenceAutoConfiguration
 import name.abhijitsarkar.feign.persistence.IdGenerator
+import name.abhijitsarkar.feign.web.FeignWebAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
@@ -29,7 +30,7 @@ import org.springframework.context.annotation.Profile
  * @author Abhijit Sarkar
  */
 @Configuration
-@Import([FeignCoreAutoConfiguration, FeignPersistenceAutoConfiguration])
+@Import([FeignCoreAutoConfiguration, FeignPersistenceAutoConfiguration, FeignWebAutoConfiguration])
 class FeignConfiguration {
 
     @Bean

@@ -15,25 +15,28 @@
 
 package name.abhijitsarkar.feign.core.service
 
-import name.abhijitsarkar.feign.Request
 import name.abhijitsarkar.feign.core.matcher.DefaultBodyMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultHeadersMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultMethodMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultPathMatcher
 import name.abhijitsarkar.feign.core.matcher.DefaultQueriesMatcher
-import name.abhijitsarkar.feign.core.model.Delay
-import name.abhijitsarkar.feign.core.model.DelayStrategy
-import name.abhijitsarkar.feign.core.model.FeignMapping
 import name.abhijitsarkar.feign.core.model.FeignProperties
-import name.abhijitsarkar.feign.core.model.RequestProperties
-import name.abhijitsarkar.feign.core.model.ResponseProperties
+import name.abhijitsarkar.feign.model.Delay
+import name.abhijitsarkar.feign.model.DelayStrategy
+import name.abhijitsarkar.feign.model.FeignMapping
+import name.abhijitsarkar.feign.model.Request
+import name.abhijitsarkar.feign.model.RequestProperties
+import name.abhijitsarkar.feign.model.ResponseProperties
 import name.abhijitsarkar.feign.persistence.IdGenerator
 import org.springframework.context.ApplicationEventPublisher
+import reactor.util.function.Tuple2 as ReactorTuple2
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Duration
 import java.util.function.BiFunction
+
 /**
  * @author Abhijit Sarkar
  */
@@ -47,6 +50,7 @@ class FeignServiceSpec extends Specification {
     def feignService
     def eventPublisher
     def feignMapping
+    def timeout = Duration.ofMillis(3000)
 
     def setupSpec() {
         request = Request.builder()
@@ -63,7 +67,7 @@ class FeignServiceSpec extends Specification {
 
         eventPublisher = Mock(ApplicationEventPublisher)
 
-        feignService = new FeignService()
+        feignService = new FeignServiceImpl()
         feignService.feignProperties = feignProperties
         feignService.matchers = matchers
         feignService.eventPublisher = eventPublisher
@@ -76,10 +80,10 @@ class FeignServiceSpec extends Specification {
         feignMapping.request = requestProperties
 
         when:
-        def mapping = feignService.findFeignMapping(request)
+        def mapping = feignService.findFeignMapping(request).block(timeout)
 
         then:
-        mapping.present
+        mapping
         1 * eventPublisher.publishEvent({
             it.id == '1'
         })
@@ -87,10 +91,10 @@ class FeignServiceSpec extends Specification {
 
     def "finds mapping and publishes request event using global id generator"() {
         when:
-        def mapping = feignService.findFeignMapping(request)
+        def mapping = feignService.findFeignMapping(request).block(timeout)
 
         then:
-        mapping.present
+        mapping
         1 * eventPublisher.publishEvent({
             it.id.startsWith('a-')
         })
@@ -101,10 +105,10 @@ class FeignServiceSpec extends Specification {
         feignService.matchers = [new NoMatchMatcher()]
 
         when:
-        def mapping = feignService.findFeignMapping(request)
+        def mapping = feignService.findFeignMapping(request).block(timeout)
 
         then:
-        !mapping.present
+        !mapping
         1 * eventPublisher.publishEvent({
             it.id.startsWith('a-')
         })
@@ -119,10 +123,10 @@ class FeignServiceSpec extends Specification {
         feignMapping.request = requestProperties
 
         when:
-        def mapping = feignService.findFeignMapping(request)
+        def mapping = feignService.findFeignMapping(request).block(timeout)
 
         then:
-        mapping.present
+        mapping
         if (disable) {
             0 * eventPublisher.publishEvent(_)
         } else {
@@ -140,10 +144,10 @@ class FeignServiceSpec extends Specification {
         feignProperties.recording.disable = disable
 
         when:
-        def mapping = feignService.findFeignMapping(request)
+        def mapping = feignService.findFeignMapping(request).block(timeout)
 
         then:
-        !mapping.present
+        !mapping
         if (disable) {
             0 * eventPublisher.publishEvent(_)
         } else {
@@ -161,7 +165,7 @@ class FeignServiceSpec extends Specification {
         feignProperties.delay = delay
 
         expect:
-        feignService.calculateResponseDelay("1", null) == 1
+        feignService.calculateResponseDelayInMillis(new ReactorTuple2<String, ResponseProperties>("1", null)) == 1
     }
 
     def "calculates linear backoff delay as per global policy"() {
@@ -172,7 +176,7 @@ class FeignServiceSpec extends Specification {
         feignProperties.delay = delay
 
         expect:
-        feignService.calculateResponseDelay("1", null) == 5
+        feignService.calculateResponseDelayInMillis(new ReactorTuple2<String, ResponseProperties>("1", null)) == 5
     }
 
     def "calculates exponential backoff delay as per global policy"() {
@@ -183,7 +187,7 @@ class FeignServiceSpec extends Specification {
         feignProperties.delay = delay
 
         expect:
-        feignService.calculateResponseDelay("1", null) == 10
+        feignService.calculateResponseDelayInMillis(new ReactorTuple2<String, ResponseProperties>("1", null)) == 10
     }
 
     def "calculates constant delay as per local policy"() {
@@ -194,7 +198,7 @@ class FeignServiceSpec extends Specification {
         responseProperties.delay = delay
 
         expect:
-        feignService.calculateResponseDelay("1", responseProperties) == 1
+        feignService.calculateResponseDelayInMillis(new ReactorTuple2<String, ResponseProperties>("1", responseProperties)) == 1
     }
 
     def "calculates linear backoff delay as per local policy"() {
@@ -206,7 +210,7 @@ class FeignServiceSpec extends Specification {
         responseProperties.delay = delay
 
         expect:
-        feignService.calculateResponseDelay("1", responseProperties) == 5
+        feignService.calculateResponseDelayInMillis(new ReactorTuple2<String, ResponseProperties>("1", responseProperties)) == 5
     }
 
     def "calculates exponential backoff delay as per local policy"() {
@@ -218,13 +222,13 @@ class FeignServiceSpec extends Specification {
         responseProperties.delay = delay
 
         expect:
-        feignService.calculateResponseDelay("1", responseProperties) == 10
+        feignService.calculateResponseDelayInMillis(new ReactorTuple2<String, ResponseProperties>("1", responseProperties)) == 10
     }
 
     @Unroll
     def "determines response index when #numRequests request, #numResponse response"() {
         expect:
-        feignService.determineResponseIndex(numRequests, numResponse) == idx
+        feignService.determineResponseIndex(new ReactorTuple2<Integer, Integer>(numRequests, numResponse)) == idx
 
         where:
         numRequests | numResponse | idx

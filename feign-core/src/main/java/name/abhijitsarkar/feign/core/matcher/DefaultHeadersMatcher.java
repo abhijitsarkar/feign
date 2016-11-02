@@ -16,17 +16,17 @@
 package name.abhijitsarkar.feign.core.matcher;
 
 import lombok.extern.slf4j.Slf4j;
-import name.abhijitsarkar.feign.Request;
-import name.abhijitsarkar.feign.core.model.FeignMapping;
-import name.abhijitsarkar.feign.core.model.Headers;
-import name.abhijitsarkar.feign.core.model.RequestProperties;
+import name.abhijitsarkar.feign.model.FeignMapping;
+import name.abhijitsarkar.feign.model.Headers;
+import name.abhijitsarkar.feign.model.Request;
+import name.abhijitsarkar.feign.model.RequestProperties;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.base.Strings.nullToEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -70,11 +70,11 @@ public class DefaultHeadersMatcher implements BiFunction<Request, FeignMapping, 
                     log.info("Comparing request header {}:[{}] with {}:[{}].",
                             key, valueFromRequest, key, pairs.get(key));
 
-                    String valueFromRequestProperty = nullToEmpty(pairs.get(key));
+                    String valueFromRequestProperty = trimToEmpty(pairs.get(key));
                     Boolean ignoreCase = headers.isIgnoreCase();
 
                     if (ignoreCase) {
-                        valueFromRequest = isNullOrEmpty(valueFromRequest) ?
+                        valueFromRequest = StringUtils.isEmpty(valueFromRequest) ?
                                 valueFromRequest : valueFromRequest.toLowerCase(Locale.ENGLISH);
                         valueFromRequestProperty = valueFromRequestProperty.toLowerCase(Locale.ENGLISH);
                     }

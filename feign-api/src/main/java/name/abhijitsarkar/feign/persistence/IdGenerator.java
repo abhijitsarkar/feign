@@ -15,7 +15,7 @@
 
 package name.abhijitsarkar.feign.persistence;
 
-import name.abhijitsarkar.feign.Request;
+import name.abhijitsarkar.feign.model.Request;
 
 /**
  * @author Abhijit Sarkar

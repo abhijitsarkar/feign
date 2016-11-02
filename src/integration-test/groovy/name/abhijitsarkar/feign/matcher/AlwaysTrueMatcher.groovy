@@ -16,8 +16,8 @@
 package name.abhijitsarkar.feign.matcher
 
 import groovy.util.logging.Slf4j
-import name.abhijitsarkar.feign.Request
-import name.abhijitsarkar.feign.core.model.FeignMapping
+import name.abhijitsarkar.feign.model.Request
+import name.abhijitsarkar.feign.model.FeignMapping
 
 import java.util.function.BiFunction
 
