@@ -15,19 +15,26 @@
 
 package name.abhijitsarkar.feign.web;
 
+import lombok.extern.slf4j.Slf4j;
 import name.abhijitsarkar.feign.model.Request;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.reactive.result.method.BindingContext;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import static java.util.stream.Collectors.toMap;
 
 /**
  * @author Abhijit Sarkar
  */
+@Slf4j
 public class RequestHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -38,16 +45,29 @@ public class RequestHandlerMethodArgumentResolver implements HandlerMethodArgume
     public Mono<Object> resolveArgument(MethodParameter param,
                                         BindingContext bindingContext, ServerWebExchange exchange) {
         ServerHttpRequest request = exchange.getRequest();
+        String body = null;
 
-        return Mono.just(Request.builder()
-                .path(request.getURI().getPath())
-                .method(request.getMethod().name())
-                .queryParams(request.getQueryParams().entrySet().stream().collect(
-                        toMap(e -> e.getKey(), e -> e.getValue().toArray(new String[]{}))
-                        )
-                )
-                .headers(request.getHeaders().toSingleValueMap())
-                .body(request.getBody().toString())
-                .build());
+        try {
+            body = request.getBody()
+                    .map(DataBuffer::asByteBuffer)
+                    .map(ByteBuffer::toString)
+                    .singleOrEmpty()
+                    .blockMillis(3000);
+        } catch (RuntimeException e) {
+            log.warn("Timeout reading body.");
+        }
+
+        Map<String, String[]> queryParams = request.getQueryParams().entrySet().stream()
+                .collect(toMap(Entry::getKey, e -> e.getValue().toArray(new String[]{})));
+
+        return Mono.just(
+                Request.builder()
+                        .path(request.getURI().getPath())
+                        .method(request.getMethod().name())
+                        .queryParams(queryParams)
+                        .headers(request.getHeaders().toSingleValueMap())
+                        .body(body)
+                        .build()
+        );
     }
 }

@@ -23,6 +23,7 @@ import name.abhijitsarkar.feign.model.ResponseProperties;
 import name.abhijitsarkar.feign.service.FeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +44,7 @@ public class FeignController {
     FeignService feignService;
 
     @RequestMapping(path = "/feign/**", produces = APPLICATION_JSON_VALUE)
-    Mono<ResponseEntity<?>> all(Request request) {
+    Mono<ResponseEntity<String>> all(Request request) {
         Mono<Response> response = feignService.findFeignMapping(request);
 
         return response.map(r -> {
@@ -64,9 +65,7 @@ public class FeignController {
                         .body(responseBody.getContent());
             }
 
-            return ResponseEntity.status(rp.getStatus())
-                    .headers(httpHeaders)
-                    .build();
-        }).defaultIfEmpty(ResponseEntity.notFound().build());
+            return new ResponseEntity<String>(httpHeaders, HttpStatus.valueOf(rp.getStatus()));
+        }).defaultIfEmpty(new ResponseEntity<String>(HttpStatus.NOT_FOUND));
     }
 }

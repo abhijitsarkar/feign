@@ -58,9 +58,7 @@ allprojects {
                 "org.spockframework:spock-spring:$spockVersion",
                 "org.spockframework:spock-core:$spockVersion",
                 'org.springframework.boot:spring-boot-starter-test',
-                'com.jayway.jsonpath:json-path',
-                'io.projectreactor.ipc:reactor-netty',
-                'io.netty:netty-all'
+                'com.jayway.jsonpath:json-path'
         )
         testRuntime(
                 "cglib:cglib-nodep:$cglibVersion"
@@ -83,11 +81,13 @@ allprojects {
 
 dependencies {
     testCompile(
-            'org.springframework.boot.experimental:spring-boot-starter-web-reactive',
             project(':feign-starter'),
-            project(':feign-persistence')
+            project(':feign-persistence'),
+            'org.springframework.boot.experimental:spring-boot-starter-web-reactive',
+            'io.projectreactor.ipc:reactor-netty',
+            'io.netty:netty-all'
     )
-    testRuntime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
+    runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
 }
 
 project('feign-persistence') {
@@ -122,8 +122,7 @@ project('feign-web') {
     dependencies {
         compile(
                 project(':feign-api'),
-                'org.springframework.boot.experimental:spring-boot-starter-web-reactive',
-                'org.springframework.boot:spring-boot-starter-web'
+                'org.springframework.boot.experimental:spring-boot-starter-web-reactive'
         )
     }
 }
