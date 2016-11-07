@@ -1,0 +1,36 @@
+feign:
+  recording:
+    disable: false
+#  retry:
+#    maxRetryCount: 3
+#    retryStrategy: ON_FAILURE
+  mappings:
+    -
+      request:
+        path:
+          uri: /feign/abc
+        method:
+          name: GET
+      responses:
+        -
+          status: 201
+          headers:
+            pairs:
+              h3: c
+              h4: d
+          body:
+            raw: body
+        -
+          status: 400
+          delay:
+            delayMillis: 2000
+            delayStrategy: CONSTANT
+    -
+      request:
+        path:
+          uri: /feign/xyz
+        method:
+          name: GET
+      responses:
+        -
+          status: 500

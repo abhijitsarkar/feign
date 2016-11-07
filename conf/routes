@@ -1,0 +1,19 @@
+GET              /feign/requests  org.abhijitsarkar.feign.controllers.RequestController.findAll()
+
+DELETE           /feign/requests  org.abhijitsarkar.feign.controllers.RequestController.deleteAll()
+
+GET              /feign/requests/:id  org.abhijitsarkar.feign.controllers.RequestController.find(id: String)
+
+DELETE           /feign/requests/:id  org.abhijitsarkar.feign.controllers.RequestController.delete(id: String)
+
+GET              /$whatever<.*>   org.abhijitsarkar.feign.controllers.FeignController.all(whatever: String)
+
+PATCH            /$whatever<.*>   org.abhijitsarkar.feign.controllers.FeignController.all(whatever: String)
+
+POST             /$whatever<.*>   org.abhijitsarkar.feign.controllers.FeignController.all(whatever: String)
+
+PUT              /$whatever<.*>   org.abhijitsarkar.feign.controllers.FeignController.all(whatever: String)
+
+DELETE           /$whatever<.*>   org.abhijitsarkar.feign.controllers.FeignController.all(whatever: String)
+
+HEAD             /$whatever<.*>   org.abhijitsarkar.feign.controllers.FeignController.all(whatever: String)

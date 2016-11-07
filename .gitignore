@@ -23,3 +23,9 @@ target/
 build/
 .gradle/
 userHome/
+
+# Play/SBT
+/project/project
+/project/target
+/project/.sbtserver*
+/libexec
