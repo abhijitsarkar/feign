@@ -158,7 +158,7 @@ application.
      To replace the default id generator, implement `org.abhijitsarkar.feign.api.persistence.IdGenerator` and 
      set `feign.recording.idGenerator` to the fully-qualified classname.
 
-   * Match even parts of the image have no corresponding properties in the Feign mapping: Set `ignoreUnknown`
+   * Match even parts if the request has no corresponding properties in the Feign mapping: Set `ignoreUnknown`
      true for properties shown above.
 
    * Match even if parts of the request are empty but corresponding properties in the Feign mapping are not:
