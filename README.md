@@ -25,74 +25,73 @@ application.
    
      All the properties are optional but usually you will want to keep the `path` and `method`.
    
-    feign: 
-      delay: 
-        delayMillis: 1000
-        delayStrategy: WITH_LINEAR_BACK_OFF
-      ignoreCase: true
-      ignoreEmpty: false
-      ignoreUnknown: false
-      mappings: 
-        - 
-          request: 
-            body: 
+            feign: 
+              delay: 
+                delayMillis: 1000
+                delayStrategy: WITH_LINEAR_BACK_OFF
               ignoreCase: true
               ignoreEmpty: false
               ignoreUnknown: false
-              raw: body
-            headers: 
-              ignoreCase: true
-              ignoreEmpty: false
-              ignoreUnknown: false
-              pairs: 
-                h1: a
-                h2: b
-            method: 
-              ignoreCase: false
-              name: GET
-            path: 
-              ignoreCase: false
-              uri: /feign/abc
-            queries: 
-              ignoreCase: true
-              ignoreEmpty: false
-              ignoreUnknown: false
-              pairs: 
-                q1: 
-                  - a
-                  - b
-                q2: 
-                  - c
-          responses: 
-            - 
-              body: 
-                raw: body
-              headers: 
-                pairs: 
-                  h3: c
-                  h4: d
-              status: 201
-            - 
-              status: 500
-        - 
-          request: 
-            path: 
-              uri: /feign/xyz
-      matchers: org.abhijitsarkar.feign.domain.EmptyRequestMatchers
-      recording: 
-        disable: false
-        idGenerator: org.abhijitsarkar.feign.domain.ConstantIdGenerator
-      retry: 
-        maxRetryCount: 2
-        retryStrategy: ALWAYS
+              mappings: 
+                - 
+                  request: 
+                    body: 
+                      ignoreCase: true
+                      ignoreEmpty: false
+                      ignoreUnknown: false
+                      raw: body
+                    headers: 
+                      ignoreCase: true
+                      ignoreEmpty: false
+                      ignoreUnknown: false
+                      pairs: 
+                        h1: a
+                        h2: b
+                    method: 
+                      ignoreCase: false
+                      name: GET
+                    path: 
+                      ignoreCase: false
+                      uri: /feign/abc
+                    queries: 
+                      ignoreCase: true
+                      ignoreEmpty: false
+                      ignoreUnknown: false
+                      pairs: 
+                        q1: 
+                          - a
+                          - b
+                        q2: 
+                          - c
+                  responses: 
+                    - 
+                      body: 
+                        raw: body
+                      headers: 
+                        pairs: 
+                          h3: c
+                          h4: d
+                      status: 201
+                    - 
+                      status: 500
+                - 
+                  request: 
+                    path: 
+                      uri: /feign/xyz
+              matchers: org.abhijitsarkar.feign.domain.EmptyRequestMatchers
+              recording: 
+                disable: false
+                idGenerator: org.abhijitsarkar.feign.domain.ConstantIdGenerator
+              retry: 
+                maxRetryCount: 2
+                retryStrategy: ALWAYS
 
 
    * **Full regex support**: Mapping of requests to responses is only limited by your regex skills.
    * **Flexible content matching**: Match request body and return response based on hard-coded text,
      url resource (including file system URL), or classpath resource.
-   * **Delaying of response**: Want to simulate network delays or long-running I/O? Choose of the several
-     delay options.
-   * **Failing a request**: It is possible to fail a request after a certain number of times.
+   * **Delaying of response**: Want to simulate network delays or long-running I/O?  Set a `delay` option.
+   * **Failing a request**: It is possible to fail a request after a certain number of times by setting `retry` properties.
    * **Series of responses**: Specify multiple responses and Feign will loop through them in order. The series
      restarts from the beginning once exhausted.
    * **Recording of requests**: The request are saved in a backend data store (currently MongoDB). Finding and deleting 
@@ -172,7 +171,7 @@ application.
    
    * Use a different persistence implementation: This is possible although it takes some work. 
      Set the property `feign.recording.recordingService` to an Akka `Actor` implementation. It will receive requests in
-     the form of `*Request` class in the package `org.abhijitsarkar.feign.api.persistence`.
+     the form of `*Request` classes in the package `org.abhijitsarkar.feign.api.persistence`.
    
 ## Contribute
 
