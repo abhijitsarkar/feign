@@ -7,6 +7,7 @@ application.
    * [Play Framework](https://www.playframework.com/)(for Scala)
    * [Reactive Mongo](http://reactivemongo.org/)
    * [Akka](http://akka.io/?_ga=1.236653765.530527831.1478331011)
+   * [Cats](https://github.com/typelevel/cats)
    * [Specs2 Test Framework](http://etorreborre.github.io/specs2/)
    * MongoDB
    * Docker

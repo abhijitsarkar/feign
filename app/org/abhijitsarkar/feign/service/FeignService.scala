@@ -1,15 +1,9 @@
 package org.abhijitsarkar.feign.service
 
-import java.util.UUID
-import java.util.function.BiFunction
-import javax.inject.{Inject, Named}
-
-import akka.actor.{Actor, ActorRef}
-import org.abhijitsarkar.feign.api.domain.{FeignProperties, ResponseProperties, RetryStrategy}
-import org.abhijitsarkar.feign.api.matcher.RequestMatchers
+import cats.data.Kleisli
+import cats.{Eval, Id}
+import org.abhijitsarkar.feign.api.domain.ResponseProperties
 import org.abhijitsarkar.feign.api.model.Request
-import org.abhijitsarkar.feign.api.persistence.{IdGenerator, RecordRequest}
-import org.slf4j.LoggerFactory
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
@@ -17,98 +11,33 @@ import scala.concurrent.Future
 /**
   * @author Abhijit Sarkar
   */
-class FeignService @Inject()(@Named("requestService") val requestService: ActorRef,
-                             val feignProperties: FeignProperties,
-                             val requestMatchers: RequestMatchers,
-                             val idGenerator: IdGenerator
-                            ) extends Actor {
-  private val logger = LoggerFactory.getLogger(classOf[FeignService])
 
-  private val requestCount = new java.util.concurrent.ConcurrentHashMap[String, Int]()
-  private val failedRequestCount = new java.util.concurrent.ConcurrentHashMap[String, Int]()
-  private val sum = new BiFunction[Int, Int, Int]() {
-    override def apply(t: Int, u: Int): Int = t + u
-  }
+trait FeignService {
+  def findResponseProperties: Kleisli[Option, Request, Seq[ResponseProperties]]
 
-  override def receive = {
-    case request: Request => sender() ! findFeignMapping(request)
-    case _ => logger.warn("Unknown request received.")
-  }
+  type ResponsePropertyAndIndex = (Option[ResponseProperties], Int)
 
-  private val findResponseProperties = (request: Request) =>
-    feignProperties.mappings.find(mapping => {
-      requestMatchers.getMatchers.forall(matcher => {
-        val m = matcher(request, mapping, feignProperties)
+  def findResponsePropertyAndIndex: String => (Option[Seq[ResponseProperties]]) => ResponsePropertyAndIndex
 
-        logger.info(s"Matcher ${matcher.getClass.getName} returned ${m}.")
+  type ResponsePropertyAndDelay = (Option[ResponseProperties], Long)
 
-        m
-      })
-    })
-      .map(_.responses)
-      .getOrElse(Seq.empty)
+  def calculateResponseDelay: String => Kleisli[Id, ResponsePropertyAndIndex, Either[String, ResponsePropertyAndDelay]]
 
-  private val findResponsePropertyAndIndex = (id: String) => (rp: Seq[ResponseProperties]) => {
-    val numResponses = rp.size
-    val numRequests = requestCount.get(id)
-    val responseIdx = {
-      if (numRequests == 1 || numResponses <= 1)
-        0
-      else if (numResponses > 0 && numRequests % numResponses == 0)
-        numResponses - 1
-      else numRequests % numResponses - 1
-    }
+  type MessageOrResponseProperty = Either[String, Option[ResponseProperties]]
 
-    val responseProperty = rp.zipWithIndex.find(_._2 == responseIdx).map(_._1)
+  def maybeDelayResponse: Either[String, ResponsePropertyAndDelay] => MessageOrResponseProperty
 
-    (responseProperty, responseIdx)
-  }
+  def requestId: Request => Eval[String]
 
-  private val retry = (id: String, responseProperty: Option[ResponseProperties]) => {
-    val retry = feignProperties.retry
-    val numFailedRequests = responseProperty.map(_.status) match {
-      case Some(x) if (x >= 400) => failedRequestCount.merge(id, 1, sum)
-      case _ => failedRequestCount.get(id)
-    }
+  def findFeignMapping = (request: Request) => {
+    val id = requestId(request)
 
-    val maxRetryCount = retry.maxRetryCount.get
-    logger.debug(s"Max retry count: ${maxRetryCount}.")
-    logger.debug(s"Retry strategy: ${retry.retryStrategy}.")
-
-    val numRequests = requestCount.get(id)
-
-    retry.retryStrategy.map(RetryStrategy.withName) match {
-      case Some(RetryStrategy.Always) if (numRequests >= maxRetryCount) => {
-        Left(s"Maximum number of retries exceeded ${maxRetryCount}.")
-      }
-      case Some(RetryStrategy.OnFailure) if (numFailedRequests >= maxRetryCount) => {
-        Left(s"Maximum number of failed retries exceeded ${maxRetryCount}.")
-      }
-      case _ => Right("All good.")
-    }
-  }
-
-  private def findFeignMapping(request: Request) = Future {
-    val id = feignProperties.recordingProperties.disable
-      .filter(_ == false)
-      .map(_ => idGenerator.id(request))
-      .getOrElse(UUID.randomUUID().toString)
-
-    requestService ! RecordRequest(request, id)
-
-    val (responseProperty, responseIndex) = findResponseProperties
-      .andThen(findResponsePropertyAndIndex(id))(request)
-
-    retry(id, responseProperty) match {
-      case Right(_) => {
-        val delay = feignProperties.delay.effectiveDelay(responseIndex)
-        if (delay > 0) {
-          logger.warn(s"Delaying response by ${delay} millis.")
-          Thread.sleep(delay)
-        }
-        Right(responseProperty)
-      }
-      case x@Left(_) => x
+    Future {
+      findResponseProperties
+        .mapF[Id, ResponsePropertyAndIndex](findResponsePropertyAndIndex(id.value))
+        .andThen(calculateResponseDelay(id.value))
+        .mapF[Id, MessageOrResponseProperty](maybeDelayResponse)
+        .run(request)
     }
   }
 }

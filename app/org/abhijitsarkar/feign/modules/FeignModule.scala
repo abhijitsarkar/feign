@@ -8,7 +8,7 @@ import org.abhijitsarkar.feign.api.domain.FeignProperties
 import org.abhijitsarkar.feign.api.matcher.RequestMatchers
 import org.abhijitsarkar.feign.api.persistence.IdGenerator
 import org.abhijitsarkar.feign.domain.FeignPropertiesYamlProtocol._
-import org.abhijitsarkar.feign.service.{DefaultIdGenerator, DefaultRequestMatchers, DefaultRequestService, FeignService}
+import org.abhijitsarkar.feign.service.{DefaultIdGenerator, DefaultRequestMatchers, DefaultRequestService, FeignServiceInterpreter}
 import org.slf4j.LoggerFactory
 import play.api.libs.concurrent.AkkaGuiceSupport
 import play.api.{Configuration, Environment}
@@ -79,6 +79,6 @@ class FeignModule(environment: Environment, configuration: Configuration) extend
       .foreach(x => bindActor("requestService")(ClassTag(x)))
 
     // bind feign service
-    bindActor[FeignService]("feignService")
+    bindActor[FeignServiceInterpreter]("feignService")
   }
 }

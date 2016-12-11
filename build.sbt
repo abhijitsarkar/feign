@@ -43,9 +43,11 @@ lazy val feign = project.in(file("."))
   .dependsOn(`feign-matcher` % "test->test;compile->compile")
 
 val reactiveMongoVersion = "0.12.0"
+val catsVersion = "0.8.1"
 
 libraryDependencies ++= Seq(
-  "org.reactivemongo" %% "play2-reactivemongo" % reactiveMongoVersion
+  "org.reactivemongo" %% "play2-reactivemongo" % reactiveMongoVersion,
+  "org.typelevel" %% "cats" % catsVersion
 )
 
 fork in run := false
