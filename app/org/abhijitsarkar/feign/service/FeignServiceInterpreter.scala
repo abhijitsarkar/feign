@@ -12,6 +12,9 @@ import org.abhijitsarkar.feign.api.matcher.RequestMatchers
 import org.abhijitsarkar.feign.api.model.Request
 import org.abhijitsarkar.feign.api.persistence.IdGenerator
 import org.slf4j.LoggerFactory
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+import scala.concurrent.Future
 
 /**
   * @author Abhijit Sarkar
@@ -30,7 +33,7 @@ class FeignServiceInterpreter @Inject()(@Named("requestService") val requestServ
   }
 
   override def receive = {
-    case request: Request => sender() ! findFeignMapping(request)
+    case request: Request => sender() ! Future(super.findFeignMapping(request).run(request))
     case _ => logger.warn("Unknown request received.")
   }
 

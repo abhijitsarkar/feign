@@ -4,9 +4,6 @@ import cats.data.Kleisli
 import cats.{Eval, Id}
 import org.abhijitsarkar.feign.api.domain.ResponseProperties
 import org.abhijitsarkar.feign.api.model.Request
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
-import scala.concurrent.Future
 
 /**
   * @author Abhijit Sarkar
@@ -32,12 +29,9 @@ trait FeignService {
   def findFeignMapping = (request: Request) => {
     val id = requestId(request)
 
-    Future {
-      findResponseProperties
-        .mapF[Id, ResponsePropertyAndIndex](findResponsePropertyAndIndex(id.value))
-        .andThen(calculateResponseDelay(id.value))
-        .mapF[Id, MessageOrResponseProperty](maybeDelayResponse)
-        .run(request)
-    }
+    findResponseProperties
+      .mapF[Id, ResponsePropertyAndIndex](findResponsePropertyAndIndex(id.value))
+      .andThen(calculateResponseDelay(id.value))
+      .mapF[Id, MessageOrResponseProperty](maybeDelayResponse)
   }
 }
