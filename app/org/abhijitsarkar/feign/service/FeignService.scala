@@ -5,7 +5,7 @@ import java.util.function.BiFunction
 import javax.inject.{Inject, Named}
 
 import akka.actor.{Actor, ActorRef}
-import org.abhijitsarkar.feign.api.domain.{FeignProperties, RecordingProperties, ResponseProperties, RetryStrategy}
+import org.abhijitsarkar.feign.api.domain.{FeignProperties, ResponseProperties, RetryStrategy}
 import org.abhijitsarkar.feign.api.matcher.RequestMatchers
 import org.abhijitsarkar.feign.api.model.Request
 import org.abhijitsarkar.feign.api.persistence.{IdGenerator, RecordRequest}
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
-import scala.util.Success
 
 /**
   * @author Abhijit Sarkar
@@ -36,31 +35,47 @@ class FeignService @Inject()(@Named("requestService") val requestService: ActorR
     case _ => logger.warn("Unknown request received.")
   }
 
-  private def getRequestId(request: Request, recordingProperties: RecordingProperties) = {
-    recordingProperties.disable
-      .filter(_ == false)
-      .map(_ => idGenerator.id(request))
-      .getOrElse(UUID.randomUUID().toString)
+  private val findResponseProperties = (request: Request) =>
+    feignProperties.mappings.find(mapping => {
+      requestMatchers.getMatchers.forall(matcher => {
+        val m = matcher(request, mapping, feignProperties)
+
+        logger.info(s"Matcher ${matcher.getClass.getName} returned ${m}.")
+
+        m
+      })
+    })
+      .map(_.responses)
+      .getOrElse(Seq.empty)
+
+  private val findResponsePropertyAndIndex = (id: String) => (rp: Seq[ResponseProperties]) => {
+    val numResponses = rp.size
+    val numRequests = requestCount.get(id)
+    val responseIdx = {
+      if (numRequests == 1 || numResponses <= 1)
+        0
+      else if (numResponses > 0 && numRequests % numResponses == 0)
+        numResponses - 1
+      else numRequests % numResponses - 1
+    }
+
+    val responseProperty = rp.zipWithIndex.find(_._2 == responseIdx).map(_._1)
+
+    (responseProperty, responseIdx)
   }
 
-  private def getResponseIndex(numRequests: Int, numResponse: Int) = {
-    if (numRequests == 1 || numResponse <= 1)
-      0
-    else if (numResponse > 0 && numRequests % numResponse == 0)
-      numResponse - 1
-    else numRequests % numResponse - 1
-  }
-
-  private def getRetry(responseProperties: Option[ResponseProperties], numRequests: Int, id: String) = {
+  private val retry = (id: String, responseProperty: Option[ResponseProperties]) => {
     val retry = feignProperties.retry
-    val maxRetryCount = retry.maxRetryCount.get
-    val numFailedRequests = responseProperties.map(_.status) match {
+    val numFailedRequests = responseProperty.map(_.status) match {
       case Some(x) if (x >= 400) => failedRequestCount.merge(id, 1, sum)
       case _ => failedRequestCount.get(id)
     }
 
+    val maxRetryCount = retry.maxRetryCount.get
     logger.debug(s"Max retry count: ${maxRetryCount}.")
     logger.debug(s"Retry strategy: ${retry.retryStrategy}.")
+
+    val numRequests = requestCount.get(id)
 
     retry.retryStrategy.map(RetryStrategy.withName) match {
       case Some(RetryStrategy.Always) if (numRequests >= maxRetryCount) => {
@@ -69,60 +84,31 @@ class FeignService @Inject()(@Named("requestService") val requestService: ActorR
       case Some(RetryStrategy.OnFailure) if (numFailedRequests >= maxRetryCount) => {
         Left(s"Maximum number of failed retries exceeded ${maxRetryCount}.")
       }
-      case _ => Right(responseProperties)
+      case _ => Right("All good.")
     }
   }
 
-  private def findFeignMapping(request: Request): Future[Option[ResponseProperties]] = {
-    val responseProperties = Future {
-      feignProperties.mappings.find(mapping => {
-        requestMatchers.getMatchers.forall(matcher => {
-          val m = matcher(request, mapping, feignProperties)
+  private def findFeignMapping(request: Request) = Future {
+    val id = feignProperties.recordingProperties.disable
+      .filter(_ == false)
+      .map(_ => idGenerator.id(request))
+      .getOrElse(UUID.randomUUID().toString)
 
-          logger.info(s"Matcher ${matcher.getClass.getName} returned ${m}.")
+    requestService ! RecordRequest(request, id)
 
-          m
-        })
-      }).map(_.responses)
-    }
+    val (responseProperty, responseIndex) = findResponseProperties
+      .andThen(findResponsePropertyAndIndex(id))(request)
 
-    responseProperties.onComplete {
-      case Success(rp) => logger.debug("Successfully completed request execution.")
-      case _ => logger.error("Request execution failed.")
-    }
-
-    responseProperties.flatMap { x =>
-      val recordingProperties = feignProperties.recordingProperties
-      val id = getRequestId(request, recordingProperties)
-
-      // publish request
-      requestService ! RecordRequest(request, id)
-
-      val rp = x.getOrElse(Nil)
-
-      val numResponses = rp.size
-      val numRequests = requestCount.merge(id, 1, sum)
-      logger.debug(s"Number of requests with id: ${id} is: ${numRequests}.")
-
-      val responseIdx = getResponseIndex(numRequests, numResponses)
-      val matchingRp = rp.zipWithIndex.find(_._2 == responseIdx).map(_._1)
-
-      val either = getRetry(matchingRp, numRequests, id)
-
-      either match {
-        case Left(msg) => Future.failed(throw new RuntimeException(msg))
-        case Right(x) => {
-          val delay = feignProperties.delay.effectiveDelay(responseIdx)
-
-          logger.debug(s"Response delay for request with id: ${id} is: ${delay}.")
-
-          if (delay > 0) {
-            logger.warn(s"Delaying response by ${delay} millis.")
-            Thread.sleep(delay)
-          }
-          Future.successful(x)
+    retry(id, responseProperty) match {
+      case Right(_) => {
+        val delay = feignProperties.delay.effectiveDelay(responseIndex)
+        if (delay > 0) {
+          logger.warn(s"Delaying response by ${delay} millis.")
+          Thread.sleep(delay)
         }
+        Right(responseProperty)
       }
+      case x@Left(_) => x
     }
   }
 }

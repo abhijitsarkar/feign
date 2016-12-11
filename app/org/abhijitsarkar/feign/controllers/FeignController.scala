@@ -35,23 +35,25 @@ class FeignController @Inject()(@Named("feignService") val feignService: ActorRe
     val feignRequest = Request(path = p, method = m, headers = h, queries = q, body = b)
 
     for {
-      future <- (feignService ? feignRequest).mapTo[Future[Option[ResponseProperties]]]
+      future <- (feignService ? feignRequest).mapTo[Future[Either[String, Option[ResponseProperties]]]]
       response <- future
 
-      result = response.map { rp =>
-        val s = rp.status
-        val h = rp.headers
-          .map(_.pairs)
-          .getOrElse(ImmutableMap[String, String]())
-        val b = rp.body
-          .flatMap(_.content)
-          .map(x => HttpEntity.Strict(ByteString(x), Some(ContentTypes.JSON)))
-          .getOrElse(HttpEntity.NoEntity)
+      result = response match {
+        case Left(msg) => throw new RuntimeException(msg)
+        case Right(response) => response.map { rp =>
+          val s = rp.status
+          val h = rp.headers
+            .map(_.pairs)
+            .getOrElse(ImmutableMap[String, String]())
+          val b = rp.body
+            .flatMap(_.content)
+            .map(x => HttpEntity.Strict(ByteString(x), Some(ContentTypes.JSON)))
+            .getOrElse(HttpEntity.NoEntity)
 
-        Result(ResponseHeader(status = s, headers = h), b)
+          Result(ResponseHeader(status = s, headers = h), b)
+        }
+          .getOrElse(NotFound)
       }
-        .getOrElse(NotFound)
     } yield result
   }
-
 }

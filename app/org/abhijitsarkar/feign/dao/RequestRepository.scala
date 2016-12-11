@@ -3,7 +3,6 @@ package org.abhijitsarkar.feign.dao
 import javax.inject.{Inject, Singleton}
 
 import com.google.inject.ImplementedBy
-import org.abhijitsarkar.feign.api.model.Request
 import org.abhijitsarkar.feign.api.persistence.{RecordRequest, RequestService}
 import org.abhijitsarkar.feign.domain.RequestFormat._
 import org.slf4j.LoggerFactory
@@ -36,7 +35,7 @@ class MongoDbRequestRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)
     }
   }
 
-  override def findAll: Future[Seq[Request]] = {
+  override def findAll: Future[Seq[RecordRequest]] = {
     logger.warn(s"Attempting to find all recorded requests.")
 
     val result = futureCollection
@@ -44,19 +43,17 @@ class MongoDbRequestRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)
         .foldWhile(Seq.empty[RecordRequest], 100)({ (acc, req) =>
           Cursor.Cont(acc :+ req)
         }, Cursor.FailOnError((a, t) => logger.error("Failed to find requests.", t))))
-      .map(x => x.map(_.request))
 
     logResult(None, result)
 
     result
   }
 
-  override def find(id: String): Future[Option[Request]] = {
+  override def find(id: String): Future[Option[RecordRequest]] = {
     logger.debug(s"Attempting to find recorded request for id: ${id}.")
 
     val result = futureCollection
       .flatMap(_.find(Json.obj("id" -> id)).one[RecordRequest])
-      .map(x => x.map(_.request))
 
     logResult(Some(id), result)
 

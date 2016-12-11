@@ -5,8 +5,7 @@ import javax.inject.{Inject, Named, Singleton}
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import org.abhijitsarkar.feign.api.model.{Request => RequestPojo}
-import org.abhijitsarkar.feign.api.persistence.{DeleteRequest, FindRequest}
+import org.abhijitsarkar.feign.api.persistence.{DeleteRequest, FindRequest, RecordRequest}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
@@ -28,7 +27,7 @@ class RequestController @Inject()(@Named("requestService") val requestService: A
 
   def find(id: String) = Action.async { implicit request =>
     for {
-      future <- (requestService ? FindRequest(Some(id))).mapTo[Future[Option[RequestPojo]]]
+      future <- (requestService ? FindRequest(Some(id))).mapTo[Future[Option[RecordRequest]]]
       response <- future
       result = response.map(x => Ok(Json.toJson(x))).getOrElse(NotFound)
     } yield result
@@ -36,7 +35,7 @@ class RequestController @Inject()(@Named("requestService") val requestService: A
 
   def findAll() = Action.async { implicit request =>
     for {
-      response <- (requestService ? FindRequest(None)).mapTo[Future[Seq[RequestPojo]]]
+      response <- (requestService ? FindRequest(None)).mapTo[Future[Seq[RecordRequest]]]
       result <- response.map(x => if (x.isEmpty) NotFound else Ok(Json.toJson(x)))
     } yield result
   }

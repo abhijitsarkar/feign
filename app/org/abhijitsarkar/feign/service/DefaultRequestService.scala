@@ -3,7 +3,6 @@ package org.abhijitsarkar.feign.service
 import javax.inject.Inject
 
 import akka.actor.{Actor, Props}
-import org.abhijitsarkar.feign.api.model.Request
 import org.abhijitsarkar.feign.api.persistence.{DeleteRequest, FindRequest, RecordRequest, RequestService}
 import org.abhijitsarkar.feign.dao.RequestRepository
 import org.slf4j.LoggerFactory
@@ -26,9 +25,9 @@ class DefaultRequestService @Inject()(val requestRepository: RequestRepository) 
 
   override def create(request: RecordRequest) = requestRepository.create(request)
 
-  override def find(id: String): Future[Option[Request]] = requestRepository.find(id)
+  override def find(id: String): Future[Option[RecordRequest]] = requestRepository.find(id)
 
-  override def findAll: Future[Seq[Request]] = requestRepository.findAll
+  override def findAll: Future[Seq[RecordRequest]] = requestRepository.findAll
 
   override def delete(id: String): Future[Option[String]] = requestRepository.delete(id)
 

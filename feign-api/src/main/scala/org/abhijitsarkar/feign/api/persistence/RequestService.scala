@@ -10,9 +10,9 @@ import scala.concurrent.Future
 trait RequestService {
   def create(request: RecordRequest): Future[Option[String]]
 
-  def find(id: String): Future[Option[Request]]
+  def find(id: String): Future[Option[RecordRequest]]
 
-  def findAll: Future[Seq[Request]]
+  def findAll: Future[Seq[RecordRequest]]
 
   def delete(id: String): Future[Option[String]]
 

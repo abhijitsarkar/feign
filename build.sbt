@@ -21,14 +21,6 @@ lazy val commonSettings = Seq(
   )
 )
 
-lazy val feign = project.in(file("."))
-  .enablePlugins(PlayScala)
-  .settings(commonSettings: _*)
-  .aggregate(`feign-api`, `feign-domain`, `feign-matcher`)
-  .dependsOn(`feign-api` % "test->test;compile->compile")
-  .dependsOn(`feign-domain` % "test->test;compile->compile")
-  .dependsOn(`feign-matcher` % "test->test;compile->compile")
-
 lazy val `feign-api` = project
   .settings(commonSettings: _*)
 
@@ -41,6 +33,14 @@ lazy val `feign-domain` = project
 lazy val `feign-matcher` = project
   .settings(commonSettings: _*)
   .dependsOn(`feign-api`)
+
+lazy val feign = project.in(file("."))
+  .enablePlugins(PlayScala)
+  .settings(commonSettings: _*)
+  .aggregate(`feign-api`, `feign-domain`, `feign-matcher`)
+  .dependsOn(`feign-api` % "test->test;compile->compile")
+  .dependsOn(`feign-domain` % "test->test;compile->compile")
+  .dependsOn(`feign-matcher` % "test->test;compile->compile")
 
 val reactiveMongoVersion = "0.12.0"
 
