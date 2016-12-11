@@ -33,7 +33,7 @@ class FeignServiceInterpreter @Inject()(@Named("requestService") val requestServ
   }
 
   override def receive = {
-    case request: Request => sender() ! Future(super.findFeignMapping(request).run(request))
+    case request: Request => sender() ! Future(findFeignMapping(request).run(request))
     case _ => logger.warn("Unknown request received.")
   }
 
