@@ -17,6 +17,8 @@ application.
 [abhijit_sarkar@feign]$ docker run --name feign -p 27017:27017 -d mongo
 
 [abhijit_sarkar@feign]$ bin/activator run -DFEIGN_DATABASE_HOST=$(docker-machine ip dev)
+
+[abhijit_sarkar@feign]$ heroku local web -f Procfile.local -p 9000
 ```
 
 ## Core Features

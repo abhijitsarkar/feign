@@ -1,0 +1,1 @@
+web: bin/activator run -Dhttp.port=${PORT}
