@@ -38,12 +38,10 @@ class FeignServiceInterpreter @Inject()(@Named("requestService") val requestServ
   }
 
   def findFeignMapping(request: Request) = {
-    Future {
-      val id = requestId(request).value
-      requestService ! RecordRequest(request, id)
+    val id = requestId(request).value
+    requestService ! RecordRequest(request, id)
 
-      super.findFeignMapping(id).run(request)
-    }
+    Future(super.findFeignMapping(id).run(request))
   }
 
   override val findResponseProperties = Kleisli[Option, Request, Seq[ResponseProperties]] { (request: Request) =>
