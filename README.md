@@ -16,7 +16,7 @@ application.
 ```
 [abhijit_sarkar@feign]$ docker run --name feign -p 27017:27017 -d mongo
 
-[abhijit_sarkar@feign]$ bin/activator run -DFEIGN_DATABSE_HOST=192.168.99.100
+[abhijit_sarkar@feign]$ bin/activator run -DFEIGN_DATABASE_HOST=192.168.99.100
 ```
 
 ## Core Features
