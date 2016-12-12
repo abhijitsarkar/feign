@@ -1,1 +1,1 @@
-web: bin/activator run -Dhttp.port=${PORT}
+web: target/universal/stage/bin/feign -Dhttp.port=${PORT}
