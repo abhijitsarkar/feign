@@ -5,7 +5,7 @@ import java.util.function.BiFunction
 import javax.inject.{Inject, Named}
 
 import akka.actor.{Actor, ActorRef}
-import cats.data.Kleisli
+import cats.data.{Kleisli, Reader}
 import cats.{Eval, Id}
 import org.abhijitsarkar.feign.api.domain.{FeignProperties, ResponseProperties, RetryStrategy}
 import org.abhijitsarkar.feign.api.matcher.RequestMatchers
@@ -68,7 +68,7 @@ class FeignServiceInterpreter @Inject()(@Named("requestService") val requestServ
   }
 
   override val calculateResponseDelay = (id: String) =>
-    Kleisli[Id, ResponsePropertyAndIndex, Either[String, ResponsePropertyAndDelay]] {
+    Reader[ResponsePropertyAndIndex, Either[String, ResponsePropertyAndDelay]] {
       (t: ResponsePropertyAndIndex) => {
         val (responseProperty, responseIndex) = (t._1, t._2)
 

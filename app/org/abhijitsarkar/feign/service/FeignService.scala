@@ -1,6 +1,6 @@
 package org.abhijitsarkar.feign.service
 
-import cats.data.Kleisli
+import cats.data.{Kleisli, Reader}
 import cats.{Eval, Id}
 import org.abhijitsarkar.feign.api.domain.ResponseProperties
 import org.abhijitsarkar.feign.api.model.Request
@@ -18,7 +18,7 @@ trait FeignService {
 
   type ResponsePropertyAndDelay = (Option[ResponseProperties], Long)
 
-  def calculateResponseDelay: String => Kleisli[Id, ResponsePropertyAndIndex, Either[String, ResponsePropertyAndDelay]]
+  def calculateResponseDelay: String => Reader[ResponsePropertyAndIndex, Either[String, ResponsePropertyAndDelay]]
 
   type MessageOrResponseProperty = Either[String, Option[ResponseProperties]]
 
