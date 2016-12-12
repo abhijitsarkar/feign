@@ -10,7 +10,7 @@ import cats.{Eval, Id}
 import org.abhijitsarkar.feign.api.domain.{FeignProperties, ResponseProperties, RetryStrategy}
 import org.abhijitsarkar.feign.api.matcher.RequestMatchers
 import org.abhijitsarkar.feign.api.model.Request
-import org.abhijitsarkar.feign.api.persistence.IdGenerator
+import org.abhijitsarkar.feign.api.persistence.{IdGenerator, RecordRequest}
 import org.slf4j.LoggerFactory
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -33,8 +33,17 @@ class FeignServiceInterpreter @Inject()(@Named("requestService") val requestServ
   }
 
   override def receive = {
-    case request: Request => sender() ! Future(findFeignMapping(request).run(request))
+    case request: Request => sender() ! findFeignMapping(request)
     case _ => logger.warn("Unknown request received.")
+  }
+
+  def findFeignMapping(request: Request) = {
+    Future {
+      val id = requestId(request).value
+      requestService ! RecordRequest(request, id)
+
+      super.findFeignMapping(id).run(request)
+    }
   }
 
   override val findResponseProperties = Kleisli[Option, Request, Seq[ResponseProperties]] { (request: Request) =>
@@ -107,7 +116,7 @@ class FeignServiceInterpreter @Inject()(@Named("requestService") val requestServ
     case x@Left(_) => x.asInstanceOf[Id[MessageOrResponseProperty]]
   }
 
-  override val requestId = (request: Request) => Eval.later {
+  val requestId = (request: Request) => Eval.later {
     feignProperties.recordingProperties.disable
       .filter(_ == false)
       .map(_ => idGenerator.id(request))

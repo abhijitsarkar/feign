@@ -1,6 +1,6 @@
 # Feign
 
-Feign can be used to stub out any system you integrate with via HTTP(S). It is an absolutely non-blocking, reactive 
+Feign can be used to stub out any system you integrate with via HTTP(S). It is a non-blocking, reactive 
 application.
 
 ## Technologies Used
@@ -16,7 +16,7 @@ application.
 ```
 [abhijit_sarkar@feign]$ docker run --name feign -p 27017:27017 -d mongo
 
-[abhijit_sarkar@feign]$ bin/activator run -DFEIGN_DATABASE_HOST=192.168.99.100
+[abhijit_sarkar@feign]$ bin/activator run -DFEIGN_DATABASE_HOST=$(docker-machine ip dev)
 ```
 
 ## Core Features

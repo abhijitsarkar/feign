@@ -1,0 +1,6 @@
+{
+  "name": "Feign",
+  "description": "Feign can be used to stub out any system you integrate with via HTTP(S). It is a non-blocking, reactive application.",
+  "image": "heroku/scala",
+  "addons": [ "mongolab" ]
+}

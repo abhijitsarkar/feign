@@ -1,7 +1,7 @@
 package org.abhijitsarkar.feign.service
 
+import cats.Id
 import cats.data.{Kleisli, Reader}
-import cats.{Eval, Id}
 import org.abhijitsarkar.feign.api.domain.ResponseProperties
 import org.abhijitsarkar.feign.api.model.Request
 
@@ -24,14 +24,10 @@ trait FeignService {
 
   def maybeDelayResponse: Either[String, ResponsePropertyAndDelay] => MessageOrResponseProperty
 
-  def requestId: Request => Eval[String]
-
-  def findFeignMapping = (request: Request) => {
-    val id = requestId(request)
-
+  def findFeignMapping = (id: String) => {
     findResponseProperties
-      .mapF[Id, ResponsePropertyAndIndex](findResponsePropertyAndIndex(id.value))
-      .andThen(calculateResponseDelay(id.value))
+      .mapF[Id, ResponsePropertyAndIndex](findResponsePropertyAndIndex(id))
+      .andThen(calculateResponseDelay(id))
       .mapF[Id, MessageOrResponseProperty](maybeDelayResponse)
   }
 }
