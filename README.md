@@ -16,7 +16,11 @@ application.
 ```
 $ docker run --name feign -p 27017:27017 -d mongo
 
-$ bin/activator run -DFEIGN_DATABASE_HOST=$(docker-machine ip dev)
+$ bin/activator run -DFEIGN_DATABASE_HOST=<IP>
+
+$ sbt -jvm-debug 9999 run
+
+$ bin/activator -jvm-debug 9999 "run 9000"
 
 ```
 
